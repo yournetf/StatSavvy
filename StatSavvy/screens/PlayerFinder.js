@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, SafeAreaView, Platform, FlatList, TouchableOpac
 import { useState } from 'react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { TextInput } from 'react-native-gesture-handler';
+
 export default function PlayerFinder() {
 
   const positions = [

@@ -6,7 +6,6 @@ const screens = {
     Matchup: {
         screen: MatchupScreen
     },
-   
 }
 
 const HomeStack = createStackNavigator(screens);

@@ -12,18 +12,17 @@ export default function Matchup({ navigation }) {
   const [matchupPercent2, setMatchupPercent2] = useState(25);
   
   const bottomSheetModalRef = useRef(null);
-  const [snapPoints, setSnapPoints] = useState(["5","50%"]);
+  const [snapPoints, setSnapPoints] = useState(["5%","50%"]);
+  const [currentSnapPoint, setCurrentSnapPoint] = useState("5");
 
   useEffect(() =>{
-     handleIconPress();
+    bottomSheetModalRef.current?.present();
   },[])
 
-  function handleIconPress(){
-    bottomSheetModalRef.current?.present();
-  }
-
   function handlePanUp(){
-    bottomSheetModalRef.current?.snapToIndex(snapPoints[1]);
+    if(currentSnapPoint === "5"){
+      bottomSheetModalRef.current?.snapToIndex(1);
+    }
   }
 
   return (
@@ -31,7 +30,7 @@ export default function Matchup({ navigation }) {
       <BottomSheetModalProvider>
         <View style={styles.header}>
           
-          <TouchableOpacity style = {styles.headerIcon} onPress={handleIconPress}>
+          <TouchableOpacity style = {styles.headerIcon} onPress={handlePanUp}>
             <Image 
             source  = { {uri: 'https://picsum.photos/50/50'} }
             style   = {styles.iconImage}
@@ -44,7 +43,7 @@ export default function Matchup({ navigation }) {
             <Text style={{color: 'white', fontWeight: 'bold'}}>VS</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight]} onPress={handleIconPress}>
+          <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight]} onPress={handlePanUp}>
             <Image 
             source  = { {uri: 'https://picsum.photos/50/50'} }
             style   = {styles.iconImage}
