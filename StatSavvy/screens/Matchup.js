@@ -1,67 +1,93 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, Platform, Button, TouchableOpacity, Image, Dimensions } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { useRef } from 'react';
+import PlayerFinder from './PlayerFinder';
 
 export default function Matchup({ navigation }) {
 
   const {screenWidth, screenHeight} = Dimensions.get('screen');
   const [matchupPercent1, setMatchupPercent1] = useState(75);
   const [matchupPercent2, setMatchupPercent2] = useState(25);
+  
+  const bottomSheetModalRef = useRef(null);
+  const [snapPoints, setSnapPoints] = useState(["5","50%"]);
 
-  const iconPressHandler = () => {
-    navigation.navigate('PlayerFinder');
+  useEffect(() =>{
+     handleIconPress();
+  },[])
+
+  function handleIconPress(){
+    bottomSheetModalRef.current?.present();
+  }
+
+  function handlePanUp(){
+    bottomSheetModalRef.current?.snapToIndex(snapPoints[1]);
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        
-        <TouchableOpacity style = {styles.headerIcon} onPress={iconPressHandler}>
-          <Image 
-          source  = { {uri: 'https://picsum.photos/50/50'} }
-          style   = {styles.iconImage}
-          />
-        </TouchableOpacity>
-        
-        <Text numberOfLines={1} style = {styles.playerName}>Player#1 Name</Text>
-        
-        <TouchableOpacity style = {styles.vsSquare}>
-          <Text style={{color: 'white', fontWeight: 'bold'}}>VS</Text>
-        </TouchableOpacity>
+      <BottomSheetModalProvider>
+        <View style={styles.header}>
+          
+          <TouchableOpacity style = {styles.headerIcon} onPress={handleIconPress}>
+            <Image 
+            source  = { {uri: 'https://picsum.photos/50/50'} }
+            style   = {styles.iconImage}
+            />
+          </TouchableOpacity>
+          
+          <Text numberOfLines={1} style = {styles.playerName}>Player#1 Name</Text>
+          
+          <TouchableOpacity style = {styles.vsSquare}>
+            <Text style={{color: 'white', fontWeight: 'bold'}}>VS</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight]} onPress={iconPressHandler}>
-          <Image 
-          source  = { {uri: 'https://picsum.photos/50/50'} }
-          style   = {styles.iconImage}
-          />
-        </TouchableOpacity>
+          <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight]} onPress={handleIconPress}>
+            <Image 
+            source  = { {uri: 'https://picsum.photos/50/50'} }
+            style   = {styles.iconImage}
+            />
+          </TouchableOpacity>
 
-        <View style={styles.headerBottom}>
-        </View>
-
-        <Text numberOfLines={1} style = {[styles.playerName, {left: 203}]}>Player#2 Name</Text>
-      
-        <View style={styles.percentageBar}>
-          <View style={[styles.percentageBarStatus, {width: `${matchupPercent1}%`}]}>
-
+          <View style={styles.headerBottom}>
           </View>
-        </View>
 
-        <View style={[styles.percentageBar, styles.percentageBarRight]}>
-          <View style={[styles.percentageBarStatusRight, {width: `${matchupPercent2}%`}]}>
+          <Text numberOfLines={1} style = {[styles.playerName, {left: 203}]}>Player#2 Name</Text>
+        
+          <View style={styles.percentageBar}>
+            <View style={[styles.percentageBarStatus, {width: `${matchupPercent1}%`}]}>
 
+            </View>
           </View>
+
+          <View style={[styles.percentageBar, styles.percentageBarRight]}>
+            <View style={[styles.percentageBarStatusRight, {width: `${matchupPercent2}%`}]}>
+
+            </View>
+          </View>
+
         </View>
 
-      </View>
+        <View style={styles.bodyCard}>
+          <View style={styles.bodyCardSection}></View>
+          <View style={styles.bodyCardSection}></View>
+          <View style={styles.bodyCardSection}></View>
+          <View></View>
+        </View>
 
-      <View style={styles.bodyCard}>
-        <View style={styles.bodyCardSection}></View>
-        <View style={styles.bodyCardSection}></View>
-        <View style={styles.bodyCardSection}></View>
-        <View></View>
-      </View>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={0}
+          snapPoints={snapPoints}
+          enablePanDownToClose={false}
+        >
+          <PlayerFinder></PlayerFinder>
+        </BottomSheetModal>
       
+      
+      </BottomSheetModalProvider>
       <StatusBar style="auto" />
     </SafeAreaView>
   );

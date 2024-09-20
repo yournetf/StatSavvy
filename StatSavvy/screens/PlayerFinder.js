@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, Platform, FlatList, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
-
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { TextInput } from 'react-native-gesture-handler';
 export default function PlayerFinder() {
 
   const positions = [
@@ -21,14 +22,16 @@ export default function PlayerFinder() {
   ];
 
   const [selectedSection, setSelectedSection] = useState(positions[0]); // Default to first section
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.sheetView}>
       {/* Horizontal list of sections */}
-      <FlatList
+      <BottomSheetFlatList
+        style={[{top: 0}]}
         data={positions}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => setSelectedSection(item)}>
+          <TouchableOpacity onPress={() => setSelectedSection(item)} style={[{maxHeight: 60}]}>
             <View style={[styles.section, item.title === selectedSection.title && styles.selectedSection]}>
               <Text style={styles.sectionHeader}>{item.title}</Text>
             </View>
@@ -40,10 +43,23 @@ export default function PlayerFinder() {
         contentContainerStyle={styles.horizontalList}
       />
 
+      {/* Search Bar */}
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search players..."
+        value={searchQuery}
+        onChangeText={text => setSearchQuery(text)}
+      />
+
       {/* Vertical list of players for the selected section */}
-      <FlatList
+      <BottomSheetFlatList
+        style={[{top: -20}]}
         data={selectedSection.data}
-        renderItem={({ item }) => <Text style={styles.item}>{item}</Text>}
+        renderItem={({ item }) =>(
+          <TouchableOpacity>
+            <Text style={styles.item}>{item}</Text>
+          </TouchableOpacity>
+        )}
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.verticalList}
@@ -56,7 +72,7 @@ export default function PlayerFinder() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  sheetView: {
     flex: 1,
     backgroundColor: 'white',
     paddingTop: Platform.OS === "android" ? 50 : 0,
@@ -92,11 +108,19 @@ const styles = StyleSheet.create({
   },
   verticalList: {
     paddingHorizontal: 20,
-    paddingVertical: 10
   },
   emptyText: {
     marginTop: 20,
     textAlign: 'center',
     color: 'gray'
+  },
+  searchBar:{
+    top: -50,
+    left: '5%',
+    height: 50,
+    width: '90%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    paddingLeft: 15,
   }
 });
