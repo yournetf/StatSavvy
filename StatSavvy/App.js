@@ -1,47 +1,48 @@
+import React, { useState } from 'react';
+import { StyleSheet, Platform } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Add this import
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Platform } from 'react-native';
-import Navigator from './routes/homeStack';
-import { useState } from 'react';
 import StartSitPopup from './screens/StartSitPopup';
-// import { initializeApp } from 'firebase/app';
-// import { getFirestore } from 'firebase/firestore';
-import { addDoc, collection } from "firebase/firestore"; 
+import MatchupScreen from './screens/Matchup'; 
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
+const Drawer = createDrawerNavigator();
 
 export default function App() {
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyADYP6xGR96zzLNIWMcpcWatm02Ywt0xWE",
-    authDomain: "statsavvy-bd25e.firebaseapp.com",
-    projectId: "statsavvy-bd25e",
-    storageBucket: "statsavvy-bd25e.appspot.com",
-    messagingSenderId: "196452320353",
-    appId: "1:196452320353:web:e8e8c4cc4da2964b909620",
-    measurementId: "G-QEJJYMVQZ2"
-  };
-
-  // //Initialize Firebase.
-  // const app = initializeApp(firebaseConfig);
-
-  // //Initialize Cloud Firestore.
-  // const db = getFirestore(app);
-
-
-
-  const [isFirstLoad, setIsFirstLoad] = useState(true); // Default to true on app start
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const handleDismissPopup = () => {
     setIsFirstLoad(false);
   };
 
   return (
-    <>
-      {isFirstLoad ? (
-        <StartSitPopup onDismiss={handleDismissPopup} />
-      ) : (
-        <Navigator />
-      )}
-    </>
+    <GestureHandlerRootView >
+      <BottomSheetModalProvider>
+        <StatusBar style="auto" />
+        {isFirstLoad ? (
+          <StartSitPopup onDismiss={handleDismissPopup} />
+        ) : (
+          <NavigationContainer>
+            <Drawer.Navigator 
+              initialRouteName="Home"
+              screenOptions={{
+                drawerStyle: {
+                  backgroundColor: '#112D4E',
+                  width: 240,
+                },
+                drawerActiveTintColor: '#70d4e1',
+                drawerInactiveTintColor: 'white',
+              }}
+            >
+              <Drawer.Screen name="Matchup" component={MatchupScreen} />
+              <Drawer.Screen name="Start/Sit" component={StartSitPopup}/>
+            </Drawer.Navigator>
+          </NavigationContainer>
+        )}
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView> 
   );
 }
 

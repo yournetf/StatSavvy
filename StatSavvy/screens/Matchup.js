@@ -95,7 +95,7 @@ export default function Matchup({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#8DA0BD',
+    backgroundColor: '#101c2e',
     paddingTop: Platform.OS === "android" ? 50 : 0
   },
   header: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     height: '20%',
     left: '5%',
     borderRadius: 10,
-    backgroundColor: '#DBE2EF',
+    backgroundColor: '#112D4E',
     padding: 0,
     borderColor: 'black',
     borderWidth: 1,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     height: 50,
     left: 5,
     top: 10,
-    backgroundColor: 'black',
+    backgroundColor: '#70d4e1',
     borderRadius: 100,
   },
   iconImage: {
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 60,
     top: 25,
+    color: 'white',
     fontSize: 16,
     fontWeight: '500'
   },
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     height: 25,
     left: 175,
     top: 35,
-    backgroundColor: '#112D4E',
+    backgroundColor: '#376499',
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center'
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     height: '70%',
     top: '5%',
     left: '5%',
-    backgroundColor: '#DBE2EF',
+    backgroundColor: '#112D4E',
     borderRadius: 10
   },
   bodyCardSection: {

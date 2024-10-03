@@ -26,7 +26,7 @@ export default function PlayerFinder() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <SafeAreaView style={styles.sheetView}>
+      <SafeAreaView style={styles.sheetView}>
       {/* Horizontal list of sections */}
       <BottomSheetFlatList
         style={[{top: 0}]}
@@ -34,7 +34,10 @@ export default function PlayerFinder() {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => setSelectedSection(item)} style={[{maxHeight: 60}]}>
             <View style={[styles.section, item.title === selectedSection.title && styles.selectedSection]}>
-              <Text style={styles.sectionHeader}>{item.title}</Text>
+              {/* Conditional text style change */}
+              <Text style={[styles.sectionHeader, item.title === selectedSection.title && styles.selectedSectionHeader]}>
+                {item.title}
+              </Text>
             </View>
           </TouchableOpacity>
         )}
@@ -68,7 +71,7 @@ export default function PlayerFinder() {
       />
       
       <StatusBar style="auto" />
-    </SafeAreaView>
+      </SafeAreaView>
   );
 }
 
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     paddingTop: Platform.OS === "android" ? 50 : 0,
-    backgroundColor: '#8DA0BD'
+    backgroundColor: '#101c2e'
   },
   section: {
     marginHorizontal: 5,
@@ -88,13 +91,16 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   selectedSection: {
-    backgroundColor: '#376499', 
+    backgroundColor: '#70d4e1', 
   },
   sectionHeader: {
     fontWeight: 'bold',
     fontSize: 16,
     textAlign: 'center',
     color: 'white'
+  },
+  selectedSectionHeader: {
+    color: 'black', 
   },
   item: {
     marginVertical: 5,
