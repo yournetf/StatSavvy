@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
     top: 50,
     color: 'black',
     fontSize: 20,
+    fontWeight: '500',
   },
   playerInfo: {
     height: '100%',

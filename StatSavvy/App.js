@@ -4,9 +4,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Add this import
 import { StatusBar } from 'expo-status-bar';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
 import StartSitPopup from './screens/StartSitPopup';
 import MatchupScreen from './screens/Matchup'; 
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import SettingScreen from './screens/Settings';
 
 const Drawer = createDrawerNavigator();
 
@@ -38,6 +40,7 @@ export default function App() {
             >
               <Drawer.Screen name="Matchup" component={MatchupScreen} />
               <Drawer.Screen name="Start/Sit" component={StartSitPopup}/>
+              <Drawer.Screen name="Settings" component={SettingScreen}/>
             </Drawer.Navigator>
           </NavigationContainer>
         )}
