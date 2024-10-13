@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { UserContext } from '../App';
 import { StyleSheet, Platform, View, Text, Image} from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,6 +20,9 @@ const settings = [{
   }];
 
 export default function Settings({ navigation }){
+
+    const user = useContext(UserContext);
+
     return(
         <SafeAreaView style={styles.container}>
             <View style={styles.accountHeader}>
@@ -26,7 +31,7 @@ export default function Settings({ navigation }){
                     style={styles.accountImage}
                 />
                 <View style={styles.accountUsernameView}>
-                    <Text style={styles.accountUsername}>@AccountUsername</Text>
+                    <Text style={styles.accountUsername}>{user[0].email}</Text>
                     <Ionicons name="checkmark-circle" size={32} color="cyan" style={{top: 5, paddingLeft: 5}} />
                 </View>
             </View>

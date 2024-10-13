@@ -1,11 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, Platform, Button, TouchableOpacity, Image, Dimensions } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useRef } from 'react';
 import PlayerFinder from './PlayerFinder';
+import { UserContext } from '../App';
 
 export default function Matchup({ navigation }) {
+
+  const user = useContext(UserContext);
 
   const {screenWidth, screenHeight} = Dimensions.get('screen');
   const [matchupPercent1, setMatchupPercent1] = useState(75);
@@ -26,11 +29,11 @@ export default function Matchup({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: user[1].theme[0]}]}>
       <BottomSheetModalProvider>
-        <View style={styles.header}>
+        <View style={[styles.header, {backgroundColor: user[1].theme[1]}]}>
           
-          <TouchableOpacity style = {styles.headerIcon} onPress={handlePanUp}>
+          <TouchableOpacity style = {[styles.headerIcon, {backgroundColor: user[1].theme[2]}]} onPress={handlePanUp}>
             <Image 
             source  = { {uri: 'https://picsum.photos/50/50'} }
             style   = {styles.iconImage}
@@ -43,7 +46,7 @@ export default function Matchup({ navigation }) {
             <Text style={{color: 'white', fontWeight: 'bold'}}>VS</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight]} onPress={handlePanUp}>
+          <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight, {backgroundColor: user[1].theme[2]}]} onPress={handlePanUp}>
             <Image 
             source  = { {uri: 'https://picsum.photos/50/50'} }
             style   = {styles.iconImage}
@@ -69,7 +72,7 @@ export default function Matchup({ navigation }) {
 
         </View>
 
-        <View style={styles.bodyCard}>
+        <View style={[styles.bodyCard, {backgroundColor: user[1].theme[1]}]}>
           <View style={styles.bodyCardSection}></View>
           <View style={styles.bodyCardSection}></View>
           <View style={styles.bodyCardSection}></View>
@@ -104,7 +107,6 @@ const styles = StyleSheet.create({
     height: '20%',
     left: '5%',
     borderRadius: 10,
-    backgroundColor: '#112D4E',
     padding: 0,
     borderColor: 'black',
     borderWidth: 1,
@@ -116,7 +118,6 @@ const styles = StyleSheet.create({
     height: 50,
     left: 5,
     top: 10,
-    backgroundColor: '#70d4e1',
     borderRadius: 100,
   },
   iconImage: {
@@ -190,7 +191,6 @@ const styles = StyleSheet.create({
     height: '70%',
     top: '5%',
     left: '5%',
-    backgroundColor: '#112D4E',
     borderRadius: 10
   },
   bodyCardSection: {

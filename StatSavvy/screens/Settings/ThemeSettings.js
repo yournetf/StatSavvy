@@ -1,7 +1,16 @@
+import { DBContext } from "../../App";
+import { UserContext } from "../../App";
+
+import { doc, updateDoc } from "firebase/firestore";
+
+import { DevSettings } from "react-native";
+
+import { useContext } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, StyleSheet, Platform, Image, View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { Text, StyleSheet, Platform, Image, View, Button } from "react-native";
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import { FlashList } from "@shopify/flash-list";
+import {useState} from "react";
 
 // Mapping of team logos
 const teamLogos = {
@@ -76,16 +85,34 @@ const teamData = {
     ]
 };
 
-export default function ThemeSettings() {
+
+export default function ThemeSettings({ navigation }) {
+
+    const user = useContext(UserContext);
+    const db = useContext(DBContext);
+    
+    const userEmail = user[0].email;
+
+    const userDocRef = doc(db, "UserInfo", userEmail);
+
+    const [colorsSelected, setColorsSelected] = useState(["#101c2e", "#112D4E", "#FFFFFF"]);
+
+    function handleTeamSelect(item) {
+        const selectedColors = [item.color1, item.color2, item.color3, item.color4];
+        setColorsSelected(selectedColors);
+    }
+    
+
     return (
-        <SafeAreaView style={styles.container}>
-            <FlatList
-                style={styles.teamsList}
+        <SafeAreaView style={[styles.container, {backgroundColor: colorsSelected[0]}]}>
+            <View style={[styles.teamsList, {backgroundColor: colorsSelected[1]}]}>
+            <FlashList
+                estimatedItemSize={80}
                 data={teamData.data}
                 keyExtractor={(item) => item.teamName}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.teamBlock}>
-                        <Text style={styles.teamName}>{item.teamName}</Text>
+                    <TouchableOpacity style={styles.teamBlock} onPress={()=>{handleTeamSelect(item)}}>
+                        <Text style={[styles.teamName, {color: colorsSelected[2]}]}>{item.teamName}</Text>
                         <View style={styles.teamColorContainer}>
                             <View style={[styles.teamColorBlock, { backgroundColor: item.color1 }]} />
                             <View style={[styles.teamColorBlock, { backgroundColor: item.color2 }]} />
@@ -99,6 +126,22 @@ export default function ThemeSettings() {
                     </TouchableOpacity>
                 )}
             />
+            <Button title="Save & Restart" style={{backgroundColor: colorsSelected[2]}} 
+                onPress={async() => {
+                        try{
+                            await updateDoc(userDocRef, {
+                                theme: colorsSelected
+                            });
+                            DevSettings.reload();
+                        } catch(error) {
+                            console.log(error);
+                            navigation.goBack();
+                        }
+                    }
+                }
+            />
+            </View>
+            
         </SafeAreaView>
     );
 }
@@ -106,7 +149,6 @@ export default function ThemeSettings() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#101c2e',
         paddingTop: Platform.OS === "android" ? 20 : 0,
     },
     teamsList: {
@@ -115,7 +157,6 @@ const styles = StyleSheet.create({
         height: '90%',
         left: '5%',
         top: '10%',
-        backgroundColor: '#112D4E',
         padding: 10,
         borderRadius: 10,
         overflow: 'hidden',
@@ -127,7 +168,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     teamName: {
-        color: "#FFFFFF",
         fontSize: 18,
         fontWeight: '500',
     },
