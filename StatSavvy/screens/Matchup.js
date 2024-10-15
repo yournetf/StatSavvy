@@ -5,10 +5,15 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import { useRef } from 'react';
 import PlayerFinder from './PlayerFinder';
 import { UserContext } from '../App';
+import FootballLoading from './Loading/FootballLoading';
 
 export default function Matchup({ navigation }) {
 
   const user = useContext(UserContext);
+
+  if (!user || !user[1] || !user[1].theme) {
+    return <FootballLoading/>;
+  }
 
   const {screenWidth, screenHeight} = Dimensions.get('screen');
   const [matchupPercent1, setMatchupPercent1] = useState(75);
@@ -53,7 +58,7 @@ export default function Matchup({ navigation }) {
             />
           </TouchableOpacity>
 
-          <View style={styles.headerBottom}>
+          <View style={[styles.headerBottom, {backgroundColor: user[1].theme[2]}]}>
           </View>
 
           <Text numberOfLines={1} style = {[styles.playerName, {left: 203}]}>Player#2 Name</Text>
@@ -85,7 +90,7 @@ export default function Matchup({ navigation }) {
           snapPoints={snapPoints}
           enablePanDownToClose={false}
         >
-          <PlayerFinder></PlayerFinder>
+          <PlayerFinder color1={user[1].theme[0]} color2={user[1].theme[1]} color3={user[1].theme[2]} color4={user[1].theme[3]}></PlayerFinder>
         </BottomSheetModal>
       
       
@@ -110,7 +115,6 @@ const styles = StyleSheet.create({
     padding: 0,
     borderColor: 'black',
     borderWidth: 1,
-
   },
   headerIcon: {
     position: 'absolute',

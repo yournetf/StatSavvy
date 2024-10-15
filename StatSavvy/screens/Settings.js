@@ -24,7 +24,7 @@ export default function Settings({ navigation }){
     const user = useContext(UserContext);
 
     return(
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, {backgroundColor: user[1].theme[0]}]}>
             <View style={styles.accountHeader}>
                 <Image
                     source={{ uri: 'https://picsum.photos/50/50' }}
@@ -36,7 +36,7 @@ export default function Settings({ navigation }){
                 </View>
             </View>
             <FlatList
-                style={styles.settingsList}
+                style={[styles.settingsList, {backgroundColor: user[1].theme[1]}]}
                 data={settings[0].data}
                 renderItem={({ item, index }) => (
                     <View style={styles.settingBlock}>
@@ -85,7 +85,6 @@ export default function Settings({ navigation }){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#101c2e',
         paddingTop: Platform.OS === "android" ? 20 : 0
     },
     accountHeader: {

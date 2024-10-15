@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { TextInput } from 'react-native-gesture-handler';
 
-export default function PlayerFinder() {
-
+export default function PlayerFinder({ color1, color2, color3, color4 }) {
+  
   const positions = [
     { title: 'FAV', data: ['Player 1', 'Player 2', 
       'Player 1', 'Player 2','Player 1', 'Player 2','Player 1', 'Player 2',
@@ -26,16 +26,24 @@ export default function PlayerFinder() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-      <SafeAreaView style={styles.sheetView}>
+    <SafeAreaView style={[styles.sheetView, { backgroundColor: color1 }]}>
       {/* Horizontal list of sections */}
       <BottomSheetFlatList
-        style={[{top: 0}]}
+        style={[{ top: 0 }]}
         data={positions}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => setSelectedSection(item)} style={[{maxHeight: 60}]}>
-            <View style={[styles.section, item.title === selectedSection.title && styles.selectedSection]}>
+          <TouchableOpacity onPress={() => setSelectedSection(item)} style={[{ maxHeight: 60 }]}>
+            <View 
+              style={[
+                styles.section, 
+                item.title === selectedSection.title && { backgroundColor: color2 }
+              ]}
+            >
               {/* Conditional text style change */}
-              <Text style={[styles.sectionHeader, item.title === selectedSection.title && styles.selectedSectionHeader]}>
+              <Text style={[
+                styles.sectionHeader, 
+                item.title === selectedSection.title && { color: color3 }
+              ]}>
                 {item.title}
               </Text>
             </View>
@@ -57,7 +65,7 @@ export default function PlayerFinder() {
 
       {/* Vertical list of players for the selected section */}
       <BottomSheetFlatList
-        style={[{top: -20}]}
+        style={[{ top: -20 }]}
         data={selectedSection.data}
         renderItem={({ item }) =>(
           <TouchableOpacity>
@@ -71,7 +79,7 @@ export default function PlayerFinder() {
       />
       
       <StatusBar style="auto" />
-      </SafeAreaView>
+    </SafeAreaView>
   );
 }
 
@@ -80,7 +88,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     paddingTop: Platform.OS === "android" ? 50 : 0,
-    backgroundColor: '#101c2e'
   },
   section: {
     marginHorizontal: 5,
@@ -90,17 +97,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#112D4E',
     borderRadius: 100,
   },
-  selectedSection: {
-    backgroundColor: '#70d4e1', 
-  },
   sectionHeader: {
     fontWeight: 'bold',
     fontSize: 16,
     textAlign: 'center',
     color: 'white'
-  },
-  selectedSectionHeader: {
-    color: 'black', 
   },
   item: {
     marginVertical: 5,
