@@ -16,6 +16,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import StartSitPopup from './screens/StartSitPopup';
+import StartSitInfiniteScreen from "./screens/StartSitInfinite";
 import MatchupScreen from './screens/Matchup'; 
 import SettingScreen from './screens/Settings';
 import AccountSettingsScreen from './screens/Settings/AccountSettings'; 
@@ -179,7 +180,7 @@ export default function App() {
       }}
     >
       <Drawer.Screen name="Matchup" component={MatchupScreen} />
-      <Drawer.Screen name="Start/Sit" component={StartSitPopup}/>
+      <Drawer.Screen name="Start/Sit" component={StartSitInfiniteScreen}/>
       <Drawer.Screen name="Settings" component={SettingScreen}/>
     </Drawer.Navigator>
   );
