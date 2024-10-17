@@ -3,6 +3,8 @@ import { View, Text, Button, StyleSheet, Image, Platform } from 'react-native';
 import Modal from 'react-native-modal';
 import { TouchableOpacity } from 'react-native';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+import { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'; 
 
 export default function StartSitInfinite({ onDismiss }) {
   const player1 = [{
@@ -31,21 +33,100 @@ export default function StartSitInfinite({ onDismiss }) {
 
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
+  const rotation = useSharedValue(0);
+  const xPosition = useSharedValue(0);
+  const yPosition = useSharedValue(0);
+  const opacity = useSharedValue(1);
+  const chooseLeft = useAnimatedStyle(() => {
+    return{
+      transform: [
+                  { rotate: `${rotation.value}deg` }, 
+                  { translateX: xPosition.value},
+                  { translateY: yPosition.value},
+                 ],
+      opacity: opacity.value
+    };
+  }, [])
+  
+  const handleSwipeLeft = () => {
+    setSelectedPlayer(1);
+
+    setTimeout(() => {
+      rotation.value = withTiming(rotation.value - 180, {duration: 2000});
+      xPosition.value = withTiming(-700, {duration: 1000});
+      yPosition.value = withTiming(0, {duration: 2000});
+      opacity.value = withTiming(0, {duration: 1000});
+    }, 500)
+
+    setTimeout(() => {
+      rotation.value = withTiming(0, { duration: 1000 });
+      xPosition.value = withTiming(0, { duration: 1000 });
+      yPosition.value = withTiming(1, {duration: 1000});
+      opacity.value = withTiming(1, {duration: 1000});
+    }, 3000);
+  }
+
+  const handleSwipeRight = () => {
+    setSelectedPlayer(2);
+
+    setTimeout(() => {
+      rotation.value = withTiming(rotation.value + 180, {duration: 2000});
+      xPosition.value = withTiming(700, {duration: 1000});
+      yPosition.value = withTiming(0, {duration: 2000});
+      opacity.value = withTiming(0, {duration: 1000});
+    }, 500)
+
+    setTimeout(() => {
+      rotation.value = withTiming(0, { duration: 1000 });
+      xPosition.value = withTiming(0, { duration: 1000 });
+      yPosition.value = withTiming(1, {duration: 1000});
+      opacity.value = withTiming(1, {duration: 1000});
+    }, 3000);
+
+  }
+
+  const handleSwipeUp = () => {
+    setSelectedPlayer(0);
+
+    setTimeout(() => {
+      yPosition.value = withTiming(-500, {duration: 1000});
+      opacity.value = withTiming(0, {duration: 500});
+    }, 250)
+
+    setTimeout(() => {
+      yPosition.value = withTiming(1, {duration: 1000});
+      opacity.value = withTiming(1, {duration: 1000});
+    }, 2000);
+
+  }
+
+
   return (
     
     <GestureHandlerRootView style={styles.popUpView}>
       
         <Modal
             isVisible={true}
-            backdropColor='transparent'
+            backdropColor='green'
+            hasBackdrop={false}
+            coverScreen={false}
             swipeDirection={['left', 'right', 'up']}
-            swipeThreshold={50}
-            onSwipeComplete={() => {console.log("works")}}
+            swipeThreshold={50}        
+            onLayout={(event) => {
+              const { width, height, x, y } = event.nativeEvent.layout;
+              if(x<0){
+                handleSwipeLeft();
+              } else if(x>40){
+                handleSwipeRight();
+              } else if(y<-20){
+                handleSwipeUp();
+              }                         
+            }}
         >
-            <View style={styles.playerComparisonView}>
+            <Animated.View style={[styles.playerComparisonView, chooseLeft]}>
                 <TouchableOpacity 
-                onPress={() => setSelectedPlayer(1)} 
-                style={[styles.player1StatsTouchable, selectedPlayer === 1 ? styles.playerSelected : styles.playerUnselected]}
+                  onPress={() => setSelectedPlayer(1)} 
+                  style={[styles.player1StatsTouchable, selectedPlayer === 1 ? styles.playerSelected : styles.playerUnselected]}
                 >
                 <View style={styles.playerIcon}>
                     <Image 
@@ -90,7 +171,7 @@ export default function StartSitInfinite({ onDismiss }) {
                     keyExtractor={(item, index) => index.toString()}
                 />
                 </TouchableOpacity>
-            </View>
+            </Animated.View>
         </Modal>
 
       <TouchableOpacity style={styles.submitButton} onPress={onDismiss}>
@@ -130,16 +211,17 @@ const styles = StyleSheet.create({
   },
   playerComparisonView: {
     position: 'absolute',
-    top: '15%',
+    top: '5%',
     left: '5%',
-    height: '70%',
+    height: '80%',
     width: '90%',
     flex: 1,
     flexDirection: 'row',
     backgroundColor:'#DBE2EF',
     borderRadius: 10,
     borderWidth: 3,
-    borderColor: '#70d4e1'
+    borderColor: '#70d4e1',
+    zIndex: 1
   },
   player1StatsTouchable: {
     alignItems: 'center',
