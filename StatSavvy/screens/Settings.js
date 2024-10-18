@@ -23,8 +23,13 @@ export default function Settings({ navigation }){
 
     const user = useContext(UserContext);
 
+    const color1 = user[1].theme[0];
+    const color2 = user[1].theme[1];
+    const color3 = user[1].theme[2];
+    const color4 = user[1].theme[3];
+
     return(
-        <SafeAreaView style={[styles.container, {backgroundColor: user[1].theme[0]}]}>
+        <SafeAreaView style={[styles.container, {backgroundColor: color1}]}>
             <View style={styles.accountHeader}>
                 <TouchableOpacity>
                     <Image
@@ -34,11 +39,11 @@ export default function Settings({ navigation }){
                 </TouchableOpacity>
                 <View style={styles.accountUsernameView}>
                     <Text style={styles.accountUsername}>{user[0].email}</Text>
-                    <Ionicons name="checkmark-circle" size={32} color={user[1].theme[2]} style={{top: 5, paddingLeft: 5}} />
+                    <Ionicons name="checkmark-circle" size={32} color={color3} style={{top: 5, paddingLeft: 5}} />
                 </View>
             </View>
             <FlatList
-                style={[styles.settingsList, {backgroundColor: user[1].theme[1]}]}
+                style={[styles.settingsList, {backgroundColor: color2}]}
                 data={settings[0].data}
                 renderItem={({ item, index }) => (
                     <View style={styles.settingBlock}>
@@ -48,7 +53,7 @@ export default function Settings({ navigation }){
                                 onPress={() => navigation.navigate('AccountSettings')}
                                 style={[styles.settingItem1st, styles.settingItem]}
                             >
-                                <FontAwesome5 name={item.icon} color={user[1].theme[2]} size={24} />
+                                <FontAwesome5 name={item.icon} color={color3} size={24} />
                                 <Text style={styles.settingText}>{item.key} </Text>
                                 <Text style={styles.settingValue}>{item.value}</Text>
                             </TouchableOpacity>
@@ -58,14 +63,14 @@ export default function Settings({ navigation }){
                                 onPress={() => navigation.navigate('ThemeSettings')}
                                 style={[styles.settingItemLast, styles.settingItem]}
                             >
-                                <FontAwesome5 name={item.icon} color={user[1].theme[2]} size={24} />
+                                <FontAwesome5 name={item.icon} color={color3} size={24} />
                                 <Text style={styles.settingText}>{item.key} </Text>
                                 <Text style={styles.settingValue}>{item.value}</Text>
                             </TouchableOpacity>
                         ) : (
                             /* Items in the middle of the list */
                             <TouchableOpacity style={[styles.settingItemMiddle, styles.settingItem]}>
-                                <FontAwesome5 name={item.icon} color={user[1].theme[2]} size={24} />
+                                <FontAwesome5 name={item.icon} color={color3} size={24} />
                                 <Text style={styles.settingText}>{item.key} </Text>
                                 <Text style={styles.settingValue}>{item.value}</Text>
                             </TouchableOpacity>

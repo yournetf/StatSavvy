@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     backgroundColor: '#112D4E',
-    borderRadius: 100,
+    borderRadius: 50,
   },
   sectionHeader: {
     fontWeight: 'bold',
@@ -111,8 +111,10 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   horizontalList: {
+    top: 35,
+    height: 50,
     paddingHorizontal: 10,
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   verticalList: {
     paddingHorizontal: 20,
@@ -123,7 +125,7 @@ const styles = StyleSheet.create({
     color: 'gray'
   },
   searchBar:{
-    top: -50,
+    top: '-25%',
     left: '5%',
     height: 50,
     width: '90%',

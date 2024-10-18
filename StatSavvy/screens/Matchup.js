@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Platform, Button, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Platform, Button, TouchableOpacity, Image, Dimensions, Keyboard } from 'react-native';
 import { useEffect, useState, useContext } from 'react';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useRef } from 'react';
@@ -15,12 +15,14 @@ export default function Matchup({ navigation }) {
     return <FootballLoading/>;
   }
 
-  const {screenWidth, screenHeight} = Dimensions.get('screen');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('screen');
+  const fontSize = screenWidth ? screenWidth * 0.03 : 14;
+
   const [matchupPercent1, setMatchupPercent1] = useState(75);
   const [matchupPercent2, setMatchupPercent2] = useState(25);
   
   const bottomSheetModalRef = useRef(null);
-  const [snapPoints, setSnapPoints] = useState(["5%","50%"]);
+  const [snapPoints, setSnapPoints] = useState(["10%","70%"]);
   const [currentSnapPoint, setCurrentSnapPoint] = useState("5");
 
   useEffect(() =>{
@@ -45,7 +47,7 @@ export default function Matchup({ navigation }) {
             />
           </TouchableOpacity>
           
-          <Text numberOfLines={1} style = {styles.playerName}>Player#1 Name</Text>
+          <Text numberOfLines={1} style = {[styles.playerName, {fontSize: fontSize}]}>Player#1 Name</Text>
           
           <TouchableOpacity style = {styles.vsSquare}>
             <Text style={{color: 'white', fontWeight: 'bold'}}>VS</Text>
@@ -61,7 +63,7 @@ export default function Matchup({ navigation }) {
           <View style={[styles.headerBottom, {backgroundColor: user[1].theme[2]}]}>
           </View>
 
-          <Text numberOfLines={1} style = {[styles.playerName, {left: 203}]}>Player#2 Name</Text>
+          <Text numberOfLines={1} style = {[styles.playerName, {left: '55%', fontSize: fontSize}]}>Player#2 Name</Text>
         
           <View style={styles.percentageBar}>
             <View style={[styles.percentageBarStatus, {width: `${matchupPercent1}%`}]}>
@@ -89,6 +91,7 @@ export default function Matchup({ navigation }) {
           index={0}
           snapPoints={snapPoints}
           enablePanDownToClose={false}
+          onChange={Keyboard.dismiss}
         >
           <PlayerFinder color1={user[1].theme[0]} color2={user[1].theme[1]} color3={user[1].theme[2]} color4={user[1].theme[3]}></PlayerFinder>
         </BottomSheetModal>
@@ -118,34 +121,33 @@ const styles = StyleSheet.create({
   },
   headerIcon: {
     position: 'absolute',
-    width: 50,
-    height: 50,
-    left: 5,
-    top: 10,
-    borderRadius: 100,
+    width: '15%',
+    height: '35%',
+    left: '1.25%',
+    top: '7%',
+    borderRadius: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconImage: {
     position: 'absolute',
-    width: 45,
-    height: 45,
-    borderRadius: 100,
-    left: 2.5,
-    top: 2.5
+    width: '90%',
+    height: '90%',
+    borderRadius: '100%',
   },
   playerName: {
     position: 'absolute',
-    left: 60,
-    top: 25,
+    left: '17%',
+    top: '20%',
     color: 'white',
-    fontSize: 16,
     fontWeight: '500'
   },
   vsSquare: {
     position: 'absolute',
-    width: 25,
-    height: 25,
-    left: 175,
-    top: 35,
+    width: '9%',
+    height: '18%',
+    left: '45%',
+    top: '30%',
     backgroundColor: '#376499',
     borderRadius: 5,
     alignItems: 'center',
@@ -162,20 +164,20 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8
   },
   headerIconRight: {
-    left: '86%'
+    left: '83.75%'
   },
   percentageBar: {
     position: 'absolute',
-    width: 100,
-    height: 5,
-    left: 60,
-    top: 50,
+    width: '28%',
+    height: '4%',
+    left: '16%',
+    top: '35%',
     backgroundColor: '#E1D7B7',
     opacity: 0.45,
     borderRadius: 100
   },
   percentageBarRight: {
-    left: 210,
+    left: '56%',
   },
   percentageBarStatus: {
     width: '75%',

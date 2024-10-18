@@ -5,8 +5,25 @@ import { TouchableOpacity } from 'react-native';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'; 
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+
+import { useContext } from 'react';
+import { UserContext } from '../App';
+import FootballLoading from './Loading/FootballLoading';
 
 export default function StartSitInfinite({ onDismiss }) {
+
+  const user = useContext(UserContext);
+
+  if (!user || !user[1] || !user[1].theme) {
+    return <FootballLoading/>;
+  }
+
+  const color1 = user[1].theme[0];
+  const color2 = user[1].theme[1];
+  const color3 = user[1].theme[2];
+  const color4 = user[1].theme[3];
+
   const player1 = [{
     name: "Tyreek Hill",
     data: [ 
@@ -103,11 +120,11 @@ export default function StartSitInfinite({ onDismiss }) {
 
   return (
     
-    <GestureHandlerRootView style={styles.popUpView}>
+    <GestureHandlerRootView style={[styles.popUpView, {backgroundColor: color1}]}>
       
         <Modal
             isVisible={true}
-            backdropColor='green'
+            backdropColor='transparent'
             hasBackdrop={false}
             coverScreen={false}
             swipeDirection={['left', 'right', 'up']}
@@ -123,10 +140,10 @@ export default function StartSitInfinite({ onDismiss }) {
               }                         
             }}
         >
-            <Animated.View style={[styles.playerComparisonView, chooseLeft]}>
+            <Animated.View style={[styles.playerComparisonView, chooseLeft, {borderColor: color3}]}>
                 <TouchableOpacity 
                   onPress={() => setSelectedPlayer(1)} 
-                  style={[styles.player1StatsTouchable, selectedPlayer === 1 ? styles.playerSelected : styles.playerUnselected]}
+                  style={[ {backgroundColor: color2, borderColor: color3}, styles.player1StatsTouchable, selectedPlayer === 1 ? styles.playerSelected && {backgroundColor: color3} : styles.playerUnselected]}
                 >
                 <View style={styles.playerIcon}>
                     <Image 
@@ -150,7 +167,7 @@ export default function StartSitInfinite({ onDismiss }) {
 
                 <TouchableOpacity 
                 onPress={() => setSelectedPlayer(2)} 
-                style={[styles.player2StatsTouchable, selectedPlayer === 2 ? styles.playerSelected : styles.playerUnselected]}
+                style={[{backgroundColor: color2, borderColor: color3}, styles.player2StatsTouchable, selectedPlayer === 2 ? styles.playerSelected && {backgroundColor: color3} : styles.playerUnselected]}
                 >
                 <View style={styles.playerIcon}>
                     <Image 
@@ -174,8 +191,8 @@ export default function StartSitInfinite({ onDismiss }) {
             </Animated.View>
         </Modal>
 
-      <TouchableOpacity style={styles.submitButton} onPress={onDismiss}>
-        <Text style={styles.submitButtonText}>Submit</Text>
+      <TouchableOpacity style={styles.informationButton} onPress={onDismiss}>
+        <FontAwesome5 name="info-circle" color="cyan" size={24}/>
       </TouchableOpacity>
     </GestureHandlerRootView>
   );
@@ -186,56 +203,44 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#112D4E',
     padding: 20,
   },
   modal: {
     margin: 0
   },
-  submitButton: {
+  informationButton: {
     position: 'absolute',
-    bottom: 50,
+    bottom: '8%',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '40%',
-    height: 50,
+    width: '10%',
+    height: '4%',
     backgroundColor: '#112D4E',
     borderColor: '#70d4e1',
-    borderWidth: 3,
-    borderRadius: 10,
-  },
-  submitButtonText: {
-    color: '#70d4e1',
-    fontSize: 24,
-    fontWeight: '700'
+    borderWidth: 2,
+    borderRadius: '100%',
   },
   playerComparisonView: {
     position: 'absolute',
-    top: '5%',
+    top: '7.5%',
     left: '5%',
     height: '80%',
     width: '90%',
     flex: 1,
     flexDirection: 'row',
-    backgroundColor:'#DBE2EF',
     borderRadius: 10,
     borderWidth: 3,
-    borderColor: '#70d4e1',
-    zIndex: 1
   },
   player1StatsTouchable: {
     alignItems: 'center',
     width: '50%',
-    backgroundColor: '#376499',
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 10,
     borderRightWidth: 1,
-    borderRightColor: '#70d4e1'
   },
   player2StatsTouchable: {
     alignItems: 'center',
     width: '50%',
-    backgroundColor: '#376499',
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10
   },
@@ -254,9 +259,7 @@ const styles = StyleSheet.create({
     borderRadius: 45
   },
   playerSelected: {
-    backgroundColor: '#70d4e1',
     opacity: '40%',
-    borderColor: 'green'
   },
   statItem: {
     flexDirection: 'row',

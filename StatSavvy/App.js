@@ -91,7 +91,6 @@ export default function App() {
     return () => unsubscribe();
   }, []);
   
-
   const handleDismissPopup = () => {
     setIsFirstLoad(false);
     console.log(currentUser.email);
@@ -107,8 +106,8 @@ export default function App() {
       />
       <Stack.Screen name="SignIn" component={SignInScreen} initialParams={{ auth }} />
       <Stack.Screen name="SignUp" component={SignUpScreen} initialParams={{ auth }} />
-      <Stack.Screen name="AccountSettings" component={AccountSettingsScreen} />
-      <Stack.Screen name="ThemeSettings" component={ThemeSettings} />
+      <Stack.Screen name="AccountSettings" component={AccountSettingsScreen} options={{headerShown: false}} />
+      <Stack.Screen name="ThemeSettings" component={ThemeSettings} options={{headerShown: false}}/>
     </Stack.Navigator>
   );
 
@@ -177,6 +176,8 @@ export default function App() {
         },
         drawerActiveTintColor: '#70d4e1',
         drawerInactiveTintColor: 'white',
+        headerShown: Platform.OS === 'android' ? true : false,
+        keyboardDismissMode: 'on-drag',
       }}
     >
       <Drawer.Screen name="Matchup" component={MatchupScreen} />
