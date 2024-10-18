@@ -187,7 +187,7 @@ export default function App() {
   );
 
   return (
-    <UserContext.Provider value={[currentUser, currentUserData]}>
+    <UserContext.Provider value={[currentUser, currentUserData, auth]}>
       <DBContext.Provider value={db}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <BottomSheetModalProvider>
@@ -200,8 +200,18 @@ export default function App() {
                   <MainStack />
                 )
               ) : (
-                <SignInScreen auth={auth} />
-              )}
+                <Stack.Navigator>
+                  <Stack.Screen 
+                    name="SignIn" 
+                    component={SignInScreen} 
+                    options={{ headerShown: false }}  
+                  />
+                  <Stack.Screen 
+                    name="SignUp" 
+                    component={SignUpScreen} 
+                    options={{ headerShown: false }}  
+                  />
+                </Stack.Navigator>              )}
             </NavigationContainer>
           </BottomSheetModalProvider>
         </GestureHandlerRootView>

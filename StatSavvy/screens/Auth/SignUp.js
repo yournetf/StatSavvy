@@ -2,11 +2,20 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Platform } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth'; // Import auth methods
+import { doc, setDoc, collection } from "firebase/firestore";
+import { useContext } from 'react';
+import { UserContext } from '../../App';
+import { DBContext } from '../../App';
 
-export default function SignUpScreen({ auth }) {
+export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const user = useContext(UserContext);
+  const auth = user[2];
+
+  const db = useContext(DBContext);
 
   const handleSignUp = () => {
     if (password !== confirmPassword) {
@@ -17,6 +26,10 @@ export default function SignUpScreen({ auth }) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log('Signed up:', userCredential.user);
+        const docRef = setDoc(doc(db, 'UserInfo', email), {
+          theme: ["#101c2e", "#112D4E", "#70d4e1", "#FFFFFF"]
+        })
+
       })
       .catch((error) => {
         console.error('Sign up error:', error);

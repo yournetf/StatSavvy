@@ -2,10 +2,16 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Platform, Text, Alert, ImageBackground } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useContext } from 'react';
+import { UserContext } from '../../App';
 
-export default function SignIn({ auth, navigation }) {
+
+export default function SignIn({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const user = useContext(UserContext);
+  const auth = user[2];
 
 
   const handleSignIn = () => {
@@ -13,7 +19,10 @@ export default function SignIn({ auth, navigation }) {
       .then((userCredential) => {
         console.log('Signed in:', userCredential.user);
         // Optionally, navigate to the main app screen after successful sign in
-        navigation.navigate('Drawer'); // Navigate to your main app screen here
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Drawer'}],
+        });
       })
       .catch((error) => {
         console.error('Sign in error:', error);
