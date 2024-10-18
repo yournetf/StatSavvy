@@ -14,6 +14,8 @@ import {useState} from "react";
 
 // Mapping of team logos
 const teamLogos = {
+    "Default": require("../../assets/StatSavvyTitle.png"),
+    "Blackout": require("../../assets/StatSavvyTitle.png"),
     "Arizona Cardinals": require("../../assets/TeamLogos/arizona_cardinals_logo.png"),
     "Atlanta Falcons": require("../../assets/TeamLogos/atlanta_falcons_logo.png"),
     "Baltimore Ravens": require("../../assets/TeamLogos/baltimore_ravens_logo.png"),
@@ -48,8 +50,12 @@ const teamLogos = {
     "Washington Commanders": require("../../assets/TeamLogos/washington_commanders_logo.png"),
 };
 
+
+
 const teamData = {
     data: [
+        { teamName: "Default", color1: "#101c2e", color2: "#112D4E", color3: "#70d4e1", color4: "#FFFFFF" },
+        { teamName: "Blackout", color1: "#000000", color2: "#101c2e", color3: "#70d4e1", color4: "#FFFFFF" },
         { teamName: "Arizona Cardinals", color1: "#97233F", color2: "#000000", color3: "#FFB612", color4: "#FFFFFF" },
         { teamName: "Atlanta Falcons", color1: "#A71930", color2: "#000000", color3: "#A5ACAF", color4: "#FFFFFF" },
         { teamName: "Baltimore Ravens", color1: "#241773", color2: "#A0A1A3", color3: "#FFC20E", color4: "#FFFFFF" },
@@ -91,11 +97,16 @@ export default function ThemeSettings({ navigation }) {
     const user = useContext(UserContext);
     const db = useContext(DBContext);
     
+    const color1 = user[1].theme[0];
+    const color2 = user[1].theme[1];
+    const color3 = user[1].theme[2];
+    const color4 = user[1].theme[3];
+
     const userEmail = user[0].email;
 
     const userDocRef = doc(db, "UserInfo", userEmail);
 
-    const [colorsSelected, setColorsSelected] = useState(["#101c2e", "#112D4E", "#FFFFFF"]);
+    const [colorsSelected, setColorsSelected] = useState([color1, color2, color3]);
 
     function handleTeamSelect(item) {
         const selectedColors = [item.color1, item.color2, item.color3, item.color4];
@@ -112,7 +123,7 @@ export default function ThemeSettings({ navigation }) {
                 keyExtractor={(item) => item.teamName}
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.teamBlock} onPress={()=>{handleTeamSelect(item)}}>
-                        <Text style={[styles.teamName, {color: colorsSelected[2]}]}>{item.teamName}</Text>
+                        <Text style={[styles.teamName, {color: "cyan"}]}>{item.teamName}</Text>
                         <View style={styles.teamColorContainer}>
                             <View style={[styles.teamColorBlock, { backgroundColor: item.color1 }]} />
                             <View style={[styles.teamColorBlock, { backgroundColor: item.color2 }]} />
@@ -132,7 +143,9 @@ export default function ThemeSettings({ navigation }) {
                             await updateDoc(userDocRef, {
                                 theme: colorsSelected
                             });
-                            DevSettings.reload();
+                            setTimeout(()=>{
+                                DevSettings.reload();
+                            }, 100)
                         } catch(error) {
                             console.log(error);
                             navigation.goBack();

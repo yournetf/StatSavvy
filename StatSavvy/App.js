@@ -121,7 +121,7 @@ export default function App() {
               <View style={{
                 height: 240,
                 width: 240,
-                backgroundColor: '#112D4E',
+                backgroundColor: currentUserData.theme[0],
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
@@ -131,7 +131,7 @@ export default function App() {
                     style={{width: 144, height: 144, borderRadius: 300}}
                   />
                 </TouchableOpacity>
-                <Text style={{color: '#70d4e1', top: 20, bottom: 25, fontWeight: '700'}}>{currentUser && currentUser.email ? currentUser.email : 'Loading...'}</Text>
+                <Text style={{color: currentUserData.theme[2], top: 20, bottom: 25, fontWeight: '700'}}>{currentUser && currentUser.email ? currentUser.email : 'Loading...'}</Text>
               </View>
               <DrawerItemList {...props}/>
               <Button title="Sign Out" 
@@ -171,11 +171,11 @@ export default function App() {
       }
       screenOptions={{
         drawerStyle: {
-          backgroundColor: '#112D4E',
+          backgroundColor: currentUserData.theme[0],
           width: 240,
         },
-        drawerActiveTintColor: '#70d4e1',
-        drawerInactiveTintColor: 'white',
+        drawerActiveTintColor: currentUserData.theme[2],
+        drawerInactiveTintColor: currentUserData.theme[1],
         headerShown: Platform.OS === 'android' ? true : false,
         keyboardDismissMode: 'on-drag',
       }}

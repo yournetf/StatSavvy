@@ -151,14 +151,14 @@ export default function StartSitInfinite({ onDismiss }) {
                     style={styles.iconImage} 
                     />
                 </View>
-                <Text style={styles.playerName}>{player1[0].name}</Text>
+                <Text style={[styles.playerName, {color: color4}]}>{player1[0].name}</Text>
                 <FlatList
                     style={styles.playerInfo}
                     data={player1[0].data}
                     renderItem={({ item }) => (
                     <View style={styles.statItem}>
-                        <Text style={styles.statKey}>{item.key}: </Text>
-                        <Text style={styles.statValue}>{item.value}</Text>
+                        <Text style={[styles.statKey, {color: color4}]}>{item.key}: </Text>
+                        <Text style={[styles.statValue, {color: color4}]}>{item.value}</Text>
                     </View>
                     )}
                     keyExtractor={(item, index) => index.toString()}
@@ -175,14 +175,14 @@ export default function StartSitInfinite({ onDismiss }) {
                     style={styles.iconImage} 
                     />
                 </View>
-                <Text style={styles.playerName}>{player2[0].name}</Text>
+                <Text style={[styles.playerName, {color: color4}]}>{player2[0].name}</Text>
                 <FlatList
                     style={styles.playerInfo}
                     data={player2[0].data}
                     renderItem={({ item }) => (
                     <View style={styles.statItem}>
-                        <Text style={styles.statKey}>{item.key}: </Text>
-                        <Text style={styles.statValue}>{item.value}</Text>
+                        <Text style={[styles.statKey, {color:color4}]}>{item.key}: </Text>
+                        <Text style={[styles.statValue, {color: color4}]}>{item.value}</Text>
                     </View>
                     )}
                     keyExtractor={(item, index) => index.toString()}
@@ -274,7 +274,6 @@ const styles = StyleSheet.create({
   },
   playerName: {
     top: 50,
-    color: 'black',
     fontSize: 20,
     fontWeight: '500',
   },
