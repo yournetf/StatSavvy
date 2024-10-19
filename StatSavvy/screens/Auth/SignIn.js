@@ -4,6 +4,7 @@ import { View, TextInput, Button, StyleSheet, Platform, Text, Alert, ImageBackgr
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useContext } from 'react';
 import { UserContext } from '../../App';
+import FootballLoading from '../Loading/FootballLoading';
 
 
 
@@ -13,6 +14,8 @@ export default function SignIn({ navigation }) {
 
   const user = useContext(UserContext);
   const auth = user[2];
+
+  const [loadingPicture, setLoadingPicture] = useState(true);
 
 
   const handleSignIn = () => {
@@ -36,35 +39,40 @@ export default function SignIn({ navigation }) {
       source={require("../../assets/FuturisticStadium.png")}
       resizeMode='cover'
       style={styles.backgroundImage}
+      onLoad={() => {setLoadingPicture(false)}}
     >
-      <View style={styles.container}>
-        <Text style={styles.loginText}>Login</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor={"#70d4e1"}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor={"#70d4e1"}
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-          <Text style={{color: '#101c2e', fontWeight: '600'}}>LOGIN</Text>
-        </TouchableOpacity>
-        <Text style={styles.signupText}>Don't Have an Account?</Text>
-        {/* Navigate to SignUpScreen on button press */}
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-          <Text style={{color: '#70d4e1', fontWeight: '600'}}>SIGN UP</Text>
-        </TouchableOpacity>
-      </View>
+      {loadingPicture ? 
+        <FootballLoading/>
+        :
+        <View style={styles.container}>
+          <Text style={styles.loginText}>Login</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor={"#70d4e1"}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor={"#70d4e1"}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+            <Text style={{color: '#101c2e', fontWeight: '600'}}>LOGIN</Text>
+          </TouchableOpacity>
+          <Text style={styles.signupText}>Don't Have an Account?</Text>
+          {/* Navigate to SignUpScreen on button press */}
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <Text style={{color: '#70d4e1', fontWeight: '600'}}>SIGN UP</Text>
+          </TouchableOpacity>
+        </View>  
+      }
     </ImageBackground>
   );
 };
