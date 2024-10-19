@@ -1,9 +1,10 @@
 // SignInScreen.js
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Platform, Text, Alert, ImageBackground } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Platform, Text, Alert, ImageBackground, TouchableOpacity } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useContext } from 'react';
 import { UserContext } from '../../App';
+
 
 
 export default function SignIn({ navigation }) {
@@ -55,10 +56,14 @@ export default function SignIn({ navigation }) {
           value={password}
           onChangeText={setPassword}
         />
-        <Button title="Sign In" onPress={handleSignIn} />
+        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+          <Text style={{color: '#101c2e', fontWeight: '600'}}>LOGIN</Text>
+        </TouchableOpacity>
         <Text style={styles.signupText}>Don't Have an Account?</Text>
         {/* Navigate to SignUpScreen on button press */}
-        <Button title="Sign Up" onPress={() => navigation.navigate('SignUp')} />
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <Text style={{color: '#70d4e1', fontWeight: '600'}}>SIGN UP</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -76,7 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: Platform.OS === 'android' ? 100 : 0,
     backgroundColor: 'black',
-    opacity: 0.8
+    opacity: 0.8,
   },
   loginText: {
     color: '#70d4e1',
@@ -95,6 +100,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#112D4E',
     borderRadius: 20,
     color: '#70d4e1'
+  },
+  signInButton: {
+    height: 40,
+    width: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#70d4e1',
+    borderRadius: 20,
   },
   signupText: {
     marginVertical: 10,
