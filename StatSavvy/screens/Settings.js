@@ -1,6 +1,6 @@
-import { useContext } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { UserContext } from '../App';
-import { StyleSheet, Platform, View, Text, Image, Touchable} from "react-native";
+import { StyleSheet, Platform, View, Text, Image, Touchable, Switch} from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -27,6 +27,9 @@ export default function Settings({ navigation }){
     const color2 = user[1].theme[1];
     const color3 = user[1].theme[2];
     const color4 = user[1].theme[3];
+
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
     return(
         <SafeAreaView style={[styles.container, {backgroundColor: color1}]}>
@@ -57,6 +60,22 @@ export default function Settings({ navigation }){
                                 <Text style={styles.settingText}>{item.key} </Text>
                                 <Text style={styles.settingValue}>{item.value}</Text>
                             </TouchableOpacity>
+                        ) : item.key === 'Notifications' ? (
+                            // Add LottieView for Notifications item
+                            <TouchableOpacity
+                                onPress={toggleSwitch}
+                                style={[styles.settingItemMiddle, styles.settingItem]}
+                            >
+                                <FontAwesome5 name={item.icon} color={color3} size={24} />
+                                <Text style={styles.settingText}>{item.key} </Text>
+                                <Switch
+                                    trackColor={{false: '#767577', true: '#02de11'}}
+                                    ios_backgroundColor="#3e3e3e"
+                                    onValueChange={toggleSwitch}
+                                    value={isEnabled}
+                                    style={styles.notiSwitch}
+                                />
+                            </TouchableOpacity>
                         ) : index === settings[0].data.length - 1 ? (
                             /* Checks if item is the last in the list */
                             <TouchableOpacity
@@ -74,16 +93,12 @@ export default function Settings({ navigation }){
                                 <Text style={styles.settingText}>{item.key} </Text>
                                 <Text style={styles.settingValue}>{item.value}</Text>
                             </TouchableOpacity>
-                        )}
+                        )
+                        
+                        }
                     </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}
-            />
-            <LottieView 
-                source={require('../assets/SwitchAnimation.json')}
-                autoPlay
-                loop
-                style={styles.switch}
             />
         </SafeAreaView>
     );
@@ -153,8 +168,8 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 10,
         borderBottomRightRadius: 10,
     },
-    switch: {
-        width: 50,
-        height: 50,
+    notiSwitch: {
+        position: 'absolute',
+        right: 10,
     }
 });

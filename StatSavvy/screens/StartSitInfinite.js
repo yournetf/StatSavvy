@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, Platform } from 'react-native';
+import { View, Text, Button, StyleSheet, Image, Platform, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
-import { TouchableOpacity } from 'react-native';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'; 
