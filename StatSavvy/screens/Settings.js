@@ -11,6 +11,7 @@ import { TouchableOpacity } from "@gorhom/bottom-sheet";
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Firebase imports
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { DevSettings } from 'react-native';
 
 const settings = [{
     name: "Tyreek Hill",
@@ -102,17 +103,31 @@ export default function Settings({ navigation }){
             console.error("Image upload failed:", error);
         } finally {
             setUploading(false);
+            setTimeout(()=>{
+                DevSettings.reload();
+            }, 100);
         }
     };
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: color1 }]}>
             <View style={styles.accountHeader}>
-                <TouchableOpacity onPress={openImagePickerAsync}>
-                    <Image
-                        source={{ uri: profilePictureUrl || 'https://picsum.photos/50/50' }} // Fallback image
-                        style={styles.accountImage}
-                    />
+                <TouchableOpacity onPress={openImagePickerAsync} style={styles.accountImage}>
+                    
+                    {!profilePictureUrl ? 
+                        <LottieView
+                            source={require("../assets/ImageLoadAnimation.json")}
+                            loop
+                            autoPlay
+                            style={styles.accountImage}
+                        />
+                        : 
+                        <Image
+                            source={{ uri: profilePictureUrl || 'https://picsum.photos/50/50' }} // Fallback image
+                            style={styles.accountImage}
+                        />
+                    }
+                    
                 </TouchableOpacity>
                 <View style={styles.accountUsernameView}>
                     <Text style={styles.accountUsername}>{user[0].email}</Text>
@@ -188,6 +203,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
+        overflow: 'hidden',
     },
     accountUsernameView: {
         flexDirection: 'row',

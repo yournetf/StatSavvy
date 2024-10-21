@@ -145,7 +145,7 @@ export default function ThemeSettings({ navigation }) {
                             });
                             setTimeout(()=>{
                                 DevSettings.reload();
-                            }, 100)
+                            }, 100);
                         } catch(error) {
                             console.log(error);
                             navigation.goBack();

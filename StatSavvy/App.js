@@ -64,6 +64,7 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserData, setCurrentUserData] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null); // State for storing the profile picture URL
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => { // Making the function async
@@ -91,6 +92,23 @@ export default function App() {
   
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+        if (currentUser) { // Ensure currentUser is defined
+            const docRef = doc(db, 'UserInfo', currentUser.email); // Use currentUser.email
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setProfilePictureUrl(data.profilePicture); // Set the profile picture URL
+            } else {
+                console.log("No such document!");
+            }
+        }
+    };
+    fetchProfilePicture();
+  }, [currentUser]); // Add currentUser as a dependency
   
   const handleDismissPopup = () => {
     setIsFirstLoad(false);
@@ -113,6 +131,7 @@ export default function App() {
   );
 
   const DrawerScreens = () => (
+    
     <Drawer.Navigator 
       initialRouteName="Matchup"
       drawerContent={
@@ -128,8 +147,8 @@ export default function App() {
               }}>
                 <TouchableOpacity>
                   <Image
-                    source={{ uri: 'https://picsum.photos/144/144' }}
-                    style={{width: 144, height: 144, borderRadius: 300}}
+                      source={{ uri: profilePictureUrl || 'https://picsum.photos/144/144' }} // Fallback image
+                      style={{width: 144, height: 144, borderRadius: 300}}
                   />
                 </TouchableOpacity>
                 <Text style={{color: currentUserData.theme[2], top: 20, bottom: 25, fontWeight: '700'}}>{currentUser && currentUser.email ? currentUser.email : 'Loading...'}</Text>
