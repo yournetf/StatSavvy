@@ -1,5 +1,6 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import { UserContext } from '../App';
+import { DBContext } from '../App';
 import { StyleSheet, Platform, View, Text, Image, Touchable, Switch} from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,6 +8,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import LottieView from 'lottie-react-native';
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import * as ImagePicker from 'expo-image-picker';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Firebase imports
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const settings = [{
     name: "Tyreek Hill",
@@ -22,6 +26,9 @@ const settings = [{
 export default function Settings({ navigation }){
 
     const user = useContext(UserContext);
+    const auth = user[2];
+
+    const db = useContext(DBContext);
 
     const color1 = user[1].theme[0];
     const color2 = user[1].theme[1];
@@ -30,27 +37,93 @@ export default function Settings({ navigation }){
 
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const [profilePictureUrl, setProfilePictureUrl] = useState(null); // State for storing the profile picture URL
+    const [uploading, setUploading] = useState(false);
 
-    return(
-        <SafeAreaView style={[styles.container, {backgroundColor: color1}]}>
+    useEffect(() => {
+        const fetchProfilePicture = async () => {
+            const docRef = doc(db, 'UserInfo', user[0].email);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setProfilePictureUrl(data.profilePicture); // Set the profile picture URL
+            } else {
+                console.log("No such document!");
+            }
+        };
+        fetchProfilePicture();
+    }, [user]);
+
+    // Function to open image picker and upload to Firebase
+    const openImagePickerAsync = async () => {
+        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("Permission to access camera roll is required!");
+            return;
+        }
+
+        let pickerResult = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!pickerResult.canceled) {
+            const imageUri = pickerResult.assets[0].uri;
+            await uploadImageToFirebase(imageUri);
+        }
+    };
+
+    // Function to upload image to Firebase
+    const uploadImageToFirebase = async (imageUri) => {
+        try {
+            setUploading(true);
+            const response = await fetch(imageUri);
+            const blob = await response.blob();
+
+            const storage = getStorage();
+            const storageRef = ref(storage, `profilePictures/${user[0].email}_profile.jpg`);
+
+            const snapshot = await uploadBytes(storageRef, blob);
+            console.log('Image uploaded successfully', snapshot);
+
+            const downloadUrl = await getDownloadURL(snapshot.ref);
+            console.log('Download URL:', downloadUrl);
+
+            // Store the download URL in Firestore
+            await updateDoc(doc(db, 'UserInfo', user[0].email), {
+                profilePicture: downloadUrl
+            });
+
+            setProfilePictureUrl(downloadUrl); // Update the state with the new URL
+        } catch (error) {
+            console.error("Image upload failed:", error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    return (
+        <SafeAreaView style={[styles.container, { backgroundColor: color1 }]}>
             <View style={styles.accountHeader}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={openImagePickerAsync}>
                     <Image
-                        source={{ uri: 'https://picsum.photos/50/50' }}
+                        source={{ uri: profilePictureUrl || 'https://picsum.photos/50/50' }} // Fallback image
                         style={styles.accountImage}
                     />
                 </TouchableOpacity>
                 <View style={styles.accountUsernameView}>
                     <Text style={styles.accountUsername}>{user[0].email}</Text>
-                    <Ionicons name="checkmark-circle" size={32} color={color3} style={{top: 5, paddingLeft: 5}} />
+                    <Ionicons name="checkmark-circle" size={32} color={color3} style={{ top: 5, paddingLeft: 5 }} />
                 </View>
             </View>
             <FlatList
-                style={[styles.settingsList, {backgroundColor: color2}]}
+                style={[styles.settingsList, { backgroundColor: color2 }]}
                 data={settings[0].data}
                 renderItem={({ item, index }) => (
                     <View style={styles.settingBlock}>
-                        {/* Checks if item is the first in the list */}
                         {index === 0 ? (
                             <TouchableOpacity
                                 onPress={() => navigation.navigate('AccountSettings')}
@@ -61,7 +134,6 @@ export default function Settings({ navigation }){
                                 <Text style={styles.settingValue}>{item.value}</Text>
                             </TouchableOpacity>
                         ) : item.key === 'Notifications' ? (
-                            // Add LottieView for Notifications item
                             <TouchableOpacity
                                 onPress={toggleSwitch}
                                 style={[styles.settingItemMiddle, styles.settingItem]}
@@ -69,7 +141,7 @@ export default function Settings({ navigation }){
                                 <FontAwesome5 name={item.icon} color={color3} size={24} />
                                 <Text style={styles.settingText}>{item.key} </Text>
                                 <Switch
-                                    trackColor={{false: '#767577', true: '#02de11'}}
+                                    trackColor={{ false: '#767577', true: '#02de11' }}
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={toggleSwitch}
                                     value={isEnabled}
@@ -77,7 +149,6 @@ export default function Settings({ navigation }){
                                 />
                             </TouchableOpacity>
                         ) : index === settings[0].data.length - 1 ? (
-                            /* Checks if item is the last in the list */
                             <TouchableOpacity
                                 onPress={() => navigation.navigate('ThemeSettings')}
                                 style={[styles.settingItemLast, styles.settingItem]}
@@ -87,15 +158,12 @@ export default function Settings({ navigation }){
                                 <Text style={styles.settingValue}>{item.value}</Text>
                             </TouchableOpacity>
                         ) : (
-                            /* Items in the middle of the list */
                             <TouchableOpacity style={[styles.settingItemMiddle, styles.settingItem]}>
                                 <FontAwesome5 name={item.icon} color={color3} size={24} />
                                 <Text style={styles.settingText}>{item.key} </Text>
                                 <Text style={styles.settingValue}>{item.value}</Text>
                             </TouchableOpacity>
-                        )
-                        
-                        }
+                        )}
                     </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}
@@ -121,7 +189,7 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
     },
-    accountUsernameView:{
+    accountUsernameView: {
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -162,7 +230,7 @@ const styles = StyleSheet.create({
     },
     settingItemMiddle: {
         borderBottomColor: 'black',
-        borderBottomWidth: 1,   
+        borderBottomWidth: 1,
     },
     settingItemLast: {
         borderBottomLeftRadius: 10,

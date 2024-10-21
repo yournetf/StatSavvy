@@ -75,6 +75,10 @@ export default function StartSitInfinite({ onDismiss }) {
     }, 500)
 
     setTimeout(() => {
+      setSelectedPlayer(0);
+    }, 1000)
+
+    setTimeout(() => {
       rotation.value = withTiming(0, { duration: 1000 });
       xPosition.value = withTiming(0, { duration: 1000 });
       yPosition.value = withTiming(1, {duration: 1000});
@@ -91,6 +95,10 @@ export default function StartSitInfinite({ onDismiss }) {
       yPosition.value = withTiming(0, {duration: 2000});
       opacity.value = withTiming(0, {duration: 1000});
     }, 500)
+
+    setTimeout(() => {
+      setSelectedPlayer(0);
+    }, 1000)
 
     setTimeout(() => {
       rotation.value = withTiming(0, { duration: 1000 });
@@ -141,10 +149,9 @@ export default function StartSitInfinite({ onDismiss }) {
         >
             <Animated.View style={[styles.playerComparisonView, chooseLeft, {borderColor: color3}]}>
                 <TouchableOpacity 
-                  onPress={() => setSelectedPlayer(1)} 
                   style={[ {backgroundColor: color2, borderColor: color3}, styles.player1StatsTouchable, selectedPlayer === 1 ? styles.playerSelected && {backgroundColor: color3} : styles.playerUnselected]}
                 >
-                <View style={styles.playerIcon}>
+                <View style={[styles.playerIcon, {backgroundColor: color3}]}>
                     <Image 
                     source={{ uri: 'https://picsum.photos/50/50' }} 
                     style={styles.iconImage} 
@@ -165,10 +172,9 @@ export default function StartSitInfinite({ onDismiss }) {
                 </TouchableOpacity>
 
                 <TouchableOpacity 
-                onPress={() => setSelectedPlayer(2)} 
                 style={[{backgroundColor: color2, borderColor: color3}, styles.player2StatsTouchable, selectedPlayer === 2 ? styles.playerSelected && {backgroundColor: color3} : styles.playerUnselected]}
                 >
-                <View style={styles.playerIcon}>
+                <View style={[styles.playerIcon, {backgroundColor: color3}]}>
                     <Image 
                     source={{ uri: 'https://picsum.photos/50/50' }} 
                     style={styles.iconImage} 
