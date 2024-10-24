@@ -66,6 +66,40 @@ export default function App() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [profilePictureUrl, setProfilePictureUrl] = useState(null); // State for storing the profile picture URL
 
+
+  
+
+//   const fetchTeamStatistics = async () => {
+//     try {
+//         const response = await fetch('https://api.sportradar.com/nfl/official/trial/v7/en/seasons/2024/REG/teams/0d855753-ea21-4953-89f9-0e20aff9eb73/statistics.json?api_key=E9LpwhQO2FU2Kv29jU5IwiV7p3G45YWzSdO5sj8K', options);
+        
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+
+//         const data = await response.json();
+//         // Assuming players are stored in a field like `players`
+//         const players = data.players; // Update this based on the actual structure of the response
+
+//         // Example: Iterating over players and logging their names and statistics
+//         players.forEach(player => {
+          
+//           if (player.receiving && player.rushing) {
+//             console.log(`${player.name} has number: ${player.jersey} and has ${player.receiving.yards} receiving yards and ${player.rushing.yards} rushing yards`);
+//         }  else {
+//           console.log('Receiving stats not available.');
+//         }
+//         });
+
+//     } catch (err) {
+//         console.error('Fetch error:', err);
+//     }
+// };
+
+
+// fetchTeamStatistics();
+
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => { // Making the function async
       setIsAuthenticated(!!user);

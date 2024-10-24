@@ -10,7 +10,7 @@ import LottieView from 'lottie-react-native';
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Firebase imports
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { DevSettings } from 'react-native';
 
 const settings = [{
@@ -55,6 +55,8 @@ export default function Settings({ navigation }){
         };
         fetchProfilePicture();
     }, [user]);
+
+    
 
     // Function to open image picker and upload to Firebase
     const openImagePickerAsync = async () => {

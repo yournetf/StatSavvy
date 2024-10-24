@@ -9,6 +9,7 @@ import FootballLoading from './Loading/FootballLoading';
 
 export default function Matchup({ navigation }) {
 
+
   const user = useContext(UserContext);
 
   if (!user || !user[1] || !user[1].theme) {
