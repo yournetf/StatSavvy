@@ -24,6 +24,7 @@ import ThemeSettings from './screens/Settings/ThemeSettings';
 import SignInScreen from "./screens/Auth/SignIn";
 import SignUpScreen from "./screens/Auth/SignUp";
 import RecapScreen from "./screens/Recap";
+import AdminMainScreen from "./screens/Admin/AdminMain";
 
 // Firebase configuration
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID, FIREBASE_MEASUREMENT_ID } from '@env';
@@ -238,6 +239,7 @@ export default function App() {
       <Drawer.Screen name="Matchup" component={MatchupScreen} />
       <Drawer.Screen name="Start/Sit" component={StartSitInfiniteScreen}/>
       <Drawer.Screen name="Recap" component={RecapScreen}/>
+      {currentUserData.Admin ? (<Drawer.Screen name="Admin" component={AdminMainScreen}/>) : <></>}
       <Drawer.Screen name="Settings" component={SettingScreen}/>
     </Drawer.Navigator>
   );
