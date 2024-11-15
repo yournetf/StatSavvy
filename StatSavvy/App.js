@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; 
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SQLite from 'expo-sqlite';
 import { signOut } from "firebase/auth";
 
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
@@ -70,35 +71,67 @@ export default function App() {
 
   
 
-//   const fetchTeamStatistics = async () => {
-//     try {
-//         const response = await fetch('https://api.sportradar.com/nfl/official/trial/v7/en/seasons/2024/REG/teams/0d855753-ea21-4953-89f9-0e20aff9eb73/statistics.json?api_key=E9LpwhQO2FU2Kv29jU5IwiV7p3G45YWzSdO5sj8K', options);
-        
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! status: ${response.status}`);
-//         }
+  useEffect(() => {
+    console.log("in use effect");
+  
+    async function createSQLiteDB() {
+      try {
+        const SQLiteDB = await SQLite.openDatabaseAsync("localDatabase.db");
+        console.log("Database opened");
+  
+        await SQLiteDB.execAsync(`
+          PRAGMA journal_mode = WAL;
+          CREATE TABLE IF NOT EXISTS test (
+            id INTEGER PRIMARY KEY NOT NULL, 
+            value TEXT NOT NULL, 
+            intValue INTEGER
+          );
+          CREATE TABLE IF NOT EXISTS players (
+            playerID INTEGER PRIMARY KEY NOT NULL, 
+            name TEXT NOT NULL, 
+            team TEXT,
+            number INTEGER,
+            age INTEGER,
+            position TEXT
+          );
+          INSERT INTO players (name, team, number, age, position) VALUES ('Davante Adams', 'Jets', 17, 32, 'WR');
+        `);
+        console.log("Database setup complete");
 
-//         const data = await response.json();
-//         // Assuming players are stored in a field like `players`
-//         const players = data.players; // Update this based on the actual structure of the response
+        try {
+          // Reference to your Firestore collection
+          const querySnapshot = await getDocs(collection(db, "players"));
+      
+          // Loop through each document in the collection
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            console.log(doc.id, " => ", data.name, data.age, data.position)
+            // console.log(doc.id, " => ", doc.data().age); // Prints the document ID and its data
+          });
+        } catch (error) {
+          console.log("Error getting documents: ", error);
+        }
 
-//         // Example: Iterating over players and logging their names and statistics
-//         players.forEach(player => {
-          
-//           if (player.receiving && player.rushing) {
-//             console.log(`${player.name} has number: ${player.jersey} and has ${player.receiving.yards} receiving yards and ${player.rushing.yards} rushing yards`);
-//         }  else {
-//           console.log('Receiving stats not available.');
-//         }
-//         });
+        const allRowsTest = await SQLiteDB.getAllAsync('SELECT * FROM test');
+        for (const row of allRowsTest) {
+          console.log(row.id, row.value, row.intValue);
+        }
 
-//     } catch (err) {
-//         console.error('Fetch error:', err);
-//     }
-// };
+        const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
+        for(const row of allRowsPlayers) {
+          console.log(row.playerID, row.name, row.team, row.number, row.age, row.position);
+        }
 
+      } catch (error) {
+        console.error("Error initializing database:", error);
+      }
+    }
+    createSQLiteDB();
+  }, []);
+  
 
-// fetchTeamStatistics();
+  
+  
 
 
   useEffect(() => {
@@ -109,7 +142,7 @@ export default function App() {
       if (user) {
         // Fetch user data from Firestore
         try {
-          const userDocRef = doc(db, "UserInfo", user.email); // Assuming "users" is your collection
+          const userDocRef = doc(db, "UserInfo", user.email); 
           const userDocSnap = await getDoc(userDocRef); // Use await here inside the async function
   
           if (userDocSnap.exists()) {
@@ -147,8 +180,8 @@ export default function App() {
   
   const handleDismissPopup = () => {
     setIsFirstLoad(false);
-    console.log(currentUser.email);
-    console.log(currentUserData);
+    // console.log(currentUser.email);
+    // console.log(currentUserData);
   };
 
   const MainStack = () => (
