@@ -59,6 +59,9 @@ const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 }); 
 
+export const SQLiteDBContext = createContext();
+let SQLiteDB;
+
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -76,11 +79,12 @@ export default function App() {
   
     async function createSQLiteDB() {
       try {
-        const SQLiteDB = await SQLite.openDatabaseAsync("localDatabase.db");
+        SQLiteDB = await SQLite.openDatabaseAsync("localDatabase.db");
         console.log("Database opened");
   
         await SQLiteDB.execAsync(`
           PRAGMA journal_mode = WAL;
+
           CREATE TABLE IF NOT EXISTS test (
             id INTEGER PRIMARY KEY NOT NULL, 
             value TEXT NOT NULL, 
@@ -88,29 +92,41 @@ export default function App() {
           );
           CREATE TABLE IF NOT EXISTS players (
             playerID INTEGER PRIMARY KEY NOT NULL, 
-            name TEXT NOT NULL, 
+            name TEXT, 
             team TEXT,
             number INTEGER,
             age INTEGER,
             position TEXT
           );
-          INSERT INTO players (name, team, number, age, position) VALUES ('Davante Adams', 'Jets', 17, 32, 'WR');
         `);
         console.log("Database setup complete");
 
-        try {
-          // Reference to your Firestore collection
-          const querySnapshot = await getDocs(collection(db, "players"));
-      
-          // Loop through each document in the collection
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            console.log(doc.id, " => ", data.name, data.age, data.position)
-            // console.log(doc.id, " => ", doc.data().age); // Prints the document ID and its data
-          });
-        } catch (error) {
-          console.log("Error getting documents: ", error);
-        }
+        // try {
+        //   // Reference to your Firestore collection
+        //   const querySnapshot = await getDocs(collection(db, "players"));
+        //   const players = querySnapshot.docs.map(doc => doc.data());
+        //   for (const player of players) {
+        //     const name = player.name || "Unknown Player"; // Provide a default if missing
+        //     const team = player.team || "N/A";
+        //     const number = isNaN(parseInt(player.number)) ? 1 : parseInt(player.number);
+        //     const age = isNaN(parseInt(player.age)) ? 1 : parseInt(player.age);
+        //     const position = player.position || "N/A";
+          
+        //     // console.log(`Inserting: ${typeof name}, ${typeof team}, ${typeof number}, ${typeof age}, ${typeof position}`); // Log each row being inserted
+          
+        //     try {
+        //       await SQLiteDB.runAsync(
+        //         `INSERT INTO players (name, team, number, age, position) VALUES (?, ?, ?, ?, ?)`,
+        //         [name, team, number, age, position]
+        //       );
+        //     } catch (error) {
+        //       console.error("Error executing insert:", error);
+        //     }
+
+        //   };
+        // } catch (error) {
+        //   console.log("Error getting documents: ", error);
+        // }
 
         const allRowsTest = await SQLiteDB.getAllAsync('SELECT * FROM test');
         for (const row of allRowsTest) {
@@ -280,32 +296,34 @@ export default function App() {
   return (
     <UserContext.Provider value={[currentUser, currentUserData, auth]}>
       <DBContext.Provider value={db}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <BottomSheetModalProvider>
-            <StatusBar style="auto" />
-            <NavigationContainer>
-              {isAuthenticated ? (
-                isFirstLoad ? (
-                  <StartSitPopup onDismiss={handleDismissPopup} />
+        <SQLiteDBContext.Provider value={SQLiteDB}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
+              <StatusBar style="auto" />
+              <NavigationContainer>
+                {isAuthenticated ? (
+                  isFirstLoad ? (
+                    <StartSitPopup onDismiss={handleDismissPopup} />
+                  ) : (
+                    <MainStack />
+                  )
                 ) : (
-                  <MainStack />
-                )
-              ) : (
-                <Stack.Navigator>
-                  <Stack.Screen 
-                    name="SignIn" 
-                    component={SignInScreen} 
-                    options={{ headerShown: false }}  
-                  />
-                  <Stack.Screen 
-                    name="SignUp" 
-                    component={SignUpScreen} 
-                    options={{ headerShown: false }}  
-                  />
-                </Stack.Navigator>              )}
-            </NavigationContainer>
-          </BottomSheetModalProvider>
-        </GestureHandlerRootView>
+                  <Stack.Navigator>
+                    <Stack.Screen 
+                      name="SignIn" 
+                      component={SignInScreen} 
+                      options={{ headerShown: false }}  
+                    />
+                    <Stack.Screen 
+                      name="SignUp" 
+                      component={SignUpScreen} 
+                      options={{ headerShown: false }}  
+                    />
+                  </Stack.Navigator>              )}
+              </NavigationContainer>
+            </BottomSheetModalProvider>
+          </GestureHandlerRootView>
+        </SQLiteDBContext.Provider>
       </DBContext.Provider>
     </UserContext.Provider>
   );

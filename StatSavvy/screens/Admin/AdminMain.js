@@ -1,6 +1,7 @@
 import { SafeAreaView, StyleSheet, Platform, Text, FlatList } from "react-native";
 import { useContext } from "react";
 import { UserContext } from "../../App";
+import { SQLiteDBContext } from "../../App";
 import { DBContext } from "../../App";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import {SPORTSRADAR_API_KEY } from '@env';
@@ -11,6 +12,7 @@ export default function AdminMain(){
     //Imports user information and firestore database from the app 
     const user = useContext(UserContext);
     const db = useContext(DBContext);
+    const SQLiteDB = useContext(SQLiteDBContext)
 
     //Gets color theme from the user context.
     const color1 = user[1].theme[0];
@@ -31,33 +33,8 @@ export default function AdminMain(){
         console.log("goodbye world");
     }
 
-    //Function that is formmtted to load API data into player db.
-    const loadCardinalsPlayers = async () =>{
-        try {
-            const response = await fetch(
-                `https://api.sportradar.com/nfl/official/trial/v7/en/seasons/2024/REG/teams/de760528-1dc0-416a-a978-b510d20692ff/statistics.json?api_key=
-              ${SPORTSRADAR_API_KEY}`
-                , options);
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            const players = data.players;
-            const playersAry = [];
-            players.forEach((player)=>{
-              playersAry.push(player.name);
-            });
-            console.log(playersAry);
-            // await db.collection("LeagueInfo").doc("Arizona Cardinals").update({
-            //   roster: playersAry,
-            // });
-          } catch (err) {
-            console.error("Fetch error:", err);
-          }
-    }
-
     // Function to print all documents in a collection
-    const printAllDocuments = async () => {
+    const printFirebasePlayers = async () => {
         try {
         // Get a reference to the collection
         const querySnapshot = await getDocs(collection(db, "players"));
@@ -71,14 +48,30 @@ export default function AdminMain(){
         console.error("Error fetching documents: ", error);
         }
     }
+
+    const printSQLiteDBPlayers = async () =>{
+        const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
+        for(const player of allRowsPlayers) {
+          console.log(player.playerID, player.name, player.team, player.number, player.age, player.position);
+        }
+    } 
+    
+    const printSQLiteDBPlayersG = async () =>{
+        const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
+        for(const player of allRowsPlayers) {
+          if(player.name.charAt(0) === 'G'){
+            console.log(player);
+          }
+        }
+    }
     
 
     const functions = [
         { title: "hey", function: helloWorld },
         { title: "goodbye", function: goodbyeWorld },
-        { title: "make a call to xyz", function: helloWorld },
-        { title: "load Cardinals players", function: loadCardinalsPlayers},
-        { title: "Print all players", function: printAllDocuments},
+        { title: "Print Players in Firebase", function: printFirebasePlayers},
+        { title: "Print Players in SQLiteDB", function: printSQLiteDBPlayers },
+        { title: "Print Players with Name G", function: printSQLiteDBPlayersG },
     ]
 
     return(
