@@ -64,7 +64,38 @@ export default function AdminMain(){
           }
         }
     }
+
+    const fillSQLiteDBwithQBS = async () => {
+        await SQLiteDB.execAsync(
+            `
+            PRAGMA journal_mode = WAL;
+            DROP TABLE IF EXISTS qbs;
+            CREATE TABLE IF NOT EXISTS qbs (
+                id INTEGER PRIMARY KEY NOT NULL, 
+                name TEXT
+          );`
+        )
+        const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
+        for(const player of allRowsPlayers) {
+          if(player.position.toLowerCase() === "qb"){
+            try {
+                await SQLiteDB.runAsync(
+                `INSERT INTO qbs (id, name) VALUES (?, ?)`,
+                [player.id, player.name]
+                );
+            } catch (error) {
+                console.error("Error executing insert:", error);
+            }
+          }
+        }
+    }
     
+    const printSQLiteDBQBs = async () => {
+        const allRowsQBs = await SQLiteDB.getAllAsync('SELECT * FROM qbs');
+        for(const qb of allRowsQBs) {
+            console.log(qb);
+        }
+    }
 
     const functions = [
         { title: "hey", function: helloWorld },
@@ -72,6 +103,8 @@ export default function AdminMain(){
         { title: "Print Players in Firebase", function: printFirebasePlayers},
         { title: "Print Players in SQLiteDB", function: printSQLiteDBPlayers },
         { title: "Print Players with Name G", function: printSQLiteDBPlayersG },
+        { title: "Fill QB Table in SQLite", function: fillSQLiteDBwithQBS },
+        { title: "Print QB Table", function: printSQLiteDBQBs },
     ]
 
     return(
