@@ -1,26 +1,36 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, Platform, FlatList, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { TextInput } from 'react-native-gesture-handler';
+import { SQLiteDBContext } from '../App';
 
 export default function PlayerFinder({ color1, color2, color3, color4 }) {
   
-  const positions = [
-    { title: 'FAV', data: ['Player 1', 'Player 2', 
-      'Player 1', 'Player 2','Player 1', 'Player 2','Player 1', 'Player 2',
-      'Player 1', 'Player 2','Player 1', 'Player 2','Player 1', 'Player 2',
-      'Player 1', 'Player 2','Player 1', 'Player 2','Player 1', 'Player 2',
-      'Player 1', 'Player 2',
-    ] },
-    { title: 'ALL', data: ['Player 3', 'Player 4'] },
-    { title: 'QB', data: ['Player 5'] },
-    { title: 'RB', data: ['Player 6', 'Player 7', 'Player 8'] },
-    { title: 'WR', data: [] }, // Empty data example
-    { title: 'TE', data: ['Player 9'] },
-    { title: 'K', data: ['Player 10'] },
-    { title: 'DEF', data: ['Player 11'] }
-  ];
+  const SQLiteDB = useContext(SQLiteDBContext);
+
+  const [positions, setPositions] = useState([
+    { title: 'FAV', data: ['Player 1', 'Player 2'] },
+    { title: 'ALL', data: [] },
+    { title: 'QB', data: [] },
+  ]);
+
+  useEffect(()=>{
+    const loadPlayers = async ()=>{
+      try{
+          const allPlayers =  await SQLiteDB.getAllAsync('SELECT * FROM players');
+          const playerNames = allPlayers.map(player => player.name);
+          const allQBs = await SQLiteDB.getAllAsync('SELECT * FROM qbs');
+          const qbNames = allQBs.map(qb => qb.name);
+          setPositions([{ title: 'FAV', data: ['Player 1', 'Player 2'] }, 
+                        { title: 'ALL', data: playerNames },
+                        { title: 'QB', data: qbNames }]);
+        } catch (error){
+          console.log("Error loading all players: ", error);
+      }      
+    }
+    loadPlayers();  
+  }, []);
 
   const [selectedSection, setSelectedSection] = useState(positions[0]); // Default to first section
   const [searchQuery, setSearchQuery] = useState('');

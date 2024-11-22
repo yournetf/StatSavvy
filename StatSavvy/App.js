@@ -108,7 +108,7 @@ export default function App() {
         //   for (const player of players) {
         //     const name = player.name || "Unknown Player"; // Provide a default if missing
         //     const team = player.team || "N/A";
-        //     const number = isNaN(parseInt(player.number)) ? 1 : parseInt(player.number);
+        //     const number = isNaN(parseInt(player.player_jersey_number)) ? 1 : parseInt(player.player_jersey_number);
         //     const age = isNaN(parseInt(player.age)) ? 1 : parseInt(player.age);
         //     const position = player.position || "N/A";
           
@@ -135,7 +135,7 @@ export default function App() {
 
         const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
         for(const row of allRowsPlayers) {
-          console.log(row.playerID, row.name, row.team, row.number, row.age, row.position);
+          console.log(row.playerID, "\t" , row.name, "\t", row.team, "\t", row.number, "\t", row.age, "\t", row.position);
         }
 
       } catch (error) {
