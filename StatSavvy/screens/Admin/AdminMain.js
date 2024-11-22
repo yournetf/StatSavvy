@@ -97,6 +97,71 @@ export default function AdminMain(){
         }
     }
 
+    const fillSQLiteDBwithTES = async () => {
+        await SQLiteDB.execAsync(
+            `
+            PRAGMA journal_mode = WAL;
+            DROP TABLE IF EXISTS tes;
+            CREATE TABLE IF NOT EXISTS tes (
+                id INTEGER PRIMARY KEY NOT NULL, 
+                name TEXT
+          );`
+        )
+        const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
+        for(const player of allRowsPlayers) {
+          if(player.position.toLowerCase() === "te"){
+            try {
+                await SQLiteDB.runAsync(
+                `INSERT INTO tes (id, name) VALUES (?, ?)`,
+                [player.id, player.name]
+                );
+            } catch (error) {
+                console.error("Error executing insert:", error);
+            }
+          }
+        }
+    }
+
+    const printSQLiteDBTEs = async () => {
+        const allRowsTEs = await SQLiteDB.getAllAsync('SELECT * FROM tes');
+        for(const te of allRowsTEs) {
+            console.log(te);
+        }
+    }
+
+    const fillSQLiteDBwithWRS = async () => {
+        await SQLiteDB.execAsync(
+            `
+            PRAGMA journal_mode = WAL;
+            DROP TABLE IF EXISTS wrs;
+            CREATE TABLE IF NOT EXISTS wrs (
+                id INTEGER PRIMARY KEY NOT NULL, 
+                name TEXT
+          );`
+        )
+        const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
+        for(const player of allRowsPlayers) {
+          if(player.position.toLowerCase() === "wr"){
+            try {
+                await SQLiteDB.runAsync(
+                `INSERT INTO wrs (id, name) VALUES (?, ?)`,
+                [player.id, player.name]
+                );
+            } catch (error) {
+                console.error("Error executing insert:", error);
+            }
+          }
+        }
+    }
+
+    const printSQLiteDBWRs = async () => {
+        const allRowsWRs = await SQLiteDB.getAllAsync('SELECT * FROM wrs');
+        for(const wr of allRowsWRs) {
+            console.log(wr);
+        }
+    }
+    
+
     const functions = [
         { title: "hey", function: helloWorld },
         { title: "goodbye", function: goodbyeWorld },
@@ -105,6 +170,10 @@ export default function AdminMain(){
         { title: "Print Players with Name G", function: printSQLiteDBPlayersG },
         { title: "Fill QB Table in SQLite", function: fillSQLiteDBwithQBS },
         { title: "Print QB Table", function: printSQLiteDBQBs },
+        { title: "Fill TE Table in SQLite", function: fillSQLiteDBwithTES },
+        { title: "Print TE Table", function: printSQLiteDBTEs },
+        { title: "Fill WR Table in SQLite", function: fillSQLiteDBwithWRS },
+        { title: "Print WR Table", function: printSQLiteDBWRs },
     ]
 
     return(

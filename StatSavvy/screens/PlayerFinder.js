@@ -13,6 +13,8 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
     { title: 'FAV', data: ['Player 1', 'Player 2'] },
     { title: 'ALL', data: [] },
     { title: 'QB', data: [] },
+    { title: 'WR', data: [] },
+    { title: 'TE', data: [] },
   ]);
 
   useEffect(()=>{
@@ -20,11 +22,21 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
       try{
           const allPlayers =  await SQLiteDB.getAllAsync('SELECT * FROM players');
           const playerNames = allPlayers.map(player => player.name);
+          
           const allQBs = await SQLiteDB.getAllAsync('SELECT * FROM qbs');
           const qbNames = allQBs.map(qb => qb.name);
+          
+          const allWRs = await SQLiteDB.getAllAsync('SELECT * FROM wrs');
+          const wrNames = allWRs.map(wr => wr.name);
+
+          const allTEs = await SQLiteDB.getAllAsync('SELECT * FROM tes');
+          const teNames = allTEs.map(te => te.name);
+
           setPositions([{ title: 'FAV', data: ['Player 1', 'Player 2'] }, 
                         { title: 'ALL', data: playerNames },
-                        { title: 'QB', data: qbNames }]);
+                        { title: 'QB', data: qbNames },
+                        { title: 'WR', data: wrNames},
+                        { title: 'TE', data: teNames }]);
         } catch (error){
           console.log("Error loading all players: ", error);
       }      
