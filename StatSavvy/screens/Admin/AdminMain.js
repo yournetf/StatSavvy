@@ -81,7 +81,7 @@ export default function AdminMain(){
             try {
                 await SQLiteDB.runAsync(
                 `INSERT INTO qbs (id, name) VALUES (?, ?)`,
-                [player.id, player.name]
+                [player.playerID, player.name]
                 );
             } catch (error) {
                 console.error("Error executing insert:", error);
@@ -91,10 +91,12 @@ export default function AdminMain(){
     }
     
     const printSQLiteDBQBs = async () => {
+        console.log(`--------------------------------------------------------\n \t\tQBs: `);
         const allRowsQBs = await SQLiteDB.getAllAsync('SELECT * FROM qbs');
         for(const qb of allRowsQBs) {
             console.log(qb);
         }
+        console.log(`--------------------------------------------------------\n`);
     }
 
     const fillSQLiteDBwithTES = async () => {
@@ -113,7 +115,7 @@ export default function AdminMain(){
             try {
                 await SQLiteDB.runAsync(
                 `INSERT INTO tes (id, name) VALUES (?, ?)`,
-                [player.id, player.name]
+                [player.playerID, player.name]
                 );
             } catch (error) {
                 console.error("Error executing insert:", error);
@@ -123,10 +125,12 @@ export default function AdminMain(){
     }
 
     const printSQLiteDBTEs = async () => {
+        console.log(`--------------------------------------------------------\n \t\tTEs: `)
         const allRowsTEs = await SQLiteDB.getAllAsync('SELECT * FROM tes');
         for(const te of allRowsTEs) {
             console.log(te);
         }
+        console.log(`--------------------------------------------------------\n`)
     }
 
     const fillSQLiteDBwithWRS = async () => {
@@ -145,7 +149,7 @@ export default function AdminMain(){
             try {
                 await SQLiteDB.runAsync(
                 `INSERT INTO wrs (id, name) VALUES (?, ?)`,
-                [player.id, player.name]
+                [player.playerID, player.name]
                 );
             } catch (error) {
                 console.error("Error executing insert:", error);
@@ -155,10 +159,12 @@ export default function AdminMain(){
     }
 
     const printSQLiteDBWRs = async () => {
+        console.log(`--------------------------------------------------------\n \t\tWRs: `)
         const allRowsWRs = await SQLiteDB.getAllAsync('SELECT * FROM wrs');
         for(const wr of allRowsWRs) {
             console.log(wr);
         }
+        console.log(`--------------------------------------------------------\n`)
     }
     
 

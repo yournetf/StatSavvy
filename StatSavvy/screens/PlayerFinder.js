@@ -4,10 +4,15 @@ import { useContext, useEffect, useState } from 'react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { TextInput } from 'react-native-gesture-handler';
 import { SQLiteDBContext } from '../App';
+import { teamData } from '../assets/TeamThemes';
 
 export default function PlayerFinder({ color1, color2, color3, color4 }) {
   
   const SQLiteDB = useContext(SQLiteDBContext);
+
+  const [playerIDToTeamMap, setPlayerIDToTeamMap] = useState(new Map());
+  const teamToColorMap1 = new Map(teamData.data.map(team => [team.teamName, team.color1]));
+  const teamToColorMap2 = new Map(teamData.data.map(team => [team.teamName, team.color2]));
 
   const [positions, setPositions] = useState([
     { title: 'FAV', data: ['Player 1', 'Player 2'] },
@@ -21,16 +26,19 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
     const loadPlayers = async ()=>{
       try{
           const allPlayers =  await SQLiteDB.getAllAsync('SELECT * FROM players');
-          const playerNames = allPlayers.map(player => player.name);
+          const playerNames = allPlayers.map(player => [player.name, player.playerID]);
+          const newMap = new Map(allPlayers.map(player => [player.playerID, player.team]));
+          setPlayerIDToTeamMap(newMap);
+
           
           const allQBs = await SQLiteDB.getAllAsync('SELECT * FROM qbs');
-          const qbNames = allQBs.map(qb => qb.name);
+          const qbNames = allQBs.map(qb => [qb.name, qb.id]);
           
           const allWRs = await SQLiteDB.getAllAsync('SELECT * FROM wrs');
-          const wrNames = allWRs.map(wr => wr.name);
+          const wrNames = allWRs.map(wr => [wr.name, wr.id]);
 
           const allTEs = await SQLiteDB.getAllAsync('SELECT * FROM tes');
-          const teNames = allTEs.map(te => te.name);
+          const teNames = allTEs.map(te => [te.name, te.id]);
 
           setPositions([{ title: 'FAV', data: ['Player 1', 'Player 2'] }, 
                         { title: 'ALL', data: playerNames },
@@ -91,7 +99,7 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
         data={selectedSection.data}
         renderItem={({ item }) =>(
           <TouchableOpacity>
-            <Text style={styles.item}>{item}</Text>
+            <Text style={[styles.item, {backgroundColor: teamToColorMap1.get(playerIDToTeamMap.get(item[1])) || '#DBE2EF', color: teamToColorMap2.get(playerIDToTeamMap.get(item[1]))}]}>{item[0]}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
@@ -128,8 +136,9 @@ const styles = StyleSheet.create({
   item: {
     marginVertical: 5,
     padding: 10,
-    backgroundColor: '#DBE2EF',
+    borderColor: '#DBE2EF',
     borderRadius: 5,
+    borderWidth: 1,
     textAlign: 'center'
   },
   horizontalList: {
