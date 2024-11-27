@@ -1,16 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Platform, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Platform, Image, TouchableOpacity } from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { TextInput } from 'react-native-gesture-handler';
 import { SQLiteDBContext } from '../App';
 import { teamData } from '../assets/TeamThemes';
+import headshots from '../assets/2024Headshots';
 
 export default function PlayerFinder({ color1, color2, color3, color4 }) {
   
   const SQLiteDB = useContext(SQLiteDBContext);
 
   const [playerIDToTeamMap, setPlayerIDToTeamMap] = useState(new Map());
+  const [playerIDToNumberMap, setPlayerIDToNumberMap] = useState(new Map());
+  const [playerIDToPositionMap, setPlayerIDToPositionMap] = useState(new Map());
   const teamToColorMap1 = new Map(teamData.data.map(team => [team.teamName, team.color1]));
   const teamToColorMap2 = new Map(teamData.data.map(team => [team.teamName, team.color2]));
 
@@ -27,9 +30,13 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
       try{
           const allPlayers =  await SQLiteDB.getAllAsync('SELECT * FROM players');
           const playerNames = allPlayers.map(player => [player.name, player.playerID]);
+          
           const newMap = new Map(allPlayers.map(player => [player.playerID, player.team]));
           setPlayerIDToTeamMap(newMap);
-
+          const newMap2 = new Map(allPlayers.map(player => [player.playerID, player.number]));
+          setPlayerIDToNumberMap(newMap2);
+          const newMap3 = new Map(allPlayers.map(player => [player.playerID, player.position]));
+          setPlayerIDToPositionMap(newMap3);
           
           const allQBs = await SQLiteDB.getAllAsync('SELECT * FROM qbs');
           const qbNames = allQBs.map(qb => [qb.name, qb.id]);
@@ -98,8 +105,14 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
         style={[{ top: -20 }]}
         data={selectedSection.data}
         renderItem={({ item }) =>(
-          <TouchableOpacity>
-            <Text style={[styles.item, {backgroundColor: teamToColorMap1.get(playerIDToTeamMap.get(item[1])) || '#DBE2EF', color: teamToColorMap2.get(playerIDToTeamMap.get(item[1]))}]}>{item[0]}</Text>
+          <TouchableOpacity style={[styles.item, {backgroundColor: teamToColorMap1.get(playerIDToTeamMap.get(item[1])) || '#DBE2EF'}]}>
+            <Image 
+              source={headshots[parseInt(item[1])] || require(`../assets/10.png`)}
+              style={[{width: 50, height: 50, borderRadius: 25}]}
+            />
+            <Text style={[styles.itemText, {color: teamToColorMap2.get(playerIDToTeamMap.get(item[1]))}]}>{item[0]}</Text>
+            <Text style={[styles.itemNumber, {color: teamToColorMap2.get(playerIDToTeamMap.get(item[1]))}]}>{playerIDToNumberMap.get(item[1])}</Text>
+            <Text style={[styles.itemPosition, {color: teamToColorMap2.get(playerIDToTeamMap.get(item[1]))}]}>{playerIDToPositionMap.get(item[1]) ? playerIDToPositionMap.get(item[1]).toUpperCase() : playerIDToPositionMap.get(item[1])}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
@@ -139,7 +152,23 @@ const styles = StyleSheet.create({
     borderColor: '#DBE2EF',
     borderRadius: 5,
     borderWidth: 1,
-    textAlign: 'center'
+    textAlign: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  itemText: {
+    
+  },
+  itemNumber: {
+    position: 'absolute',
+    right:'15%',
+    borderRightColor: 'grey',
+    borderRightWidth: 2,
+    paddingRight: '3%'
+  },
+  itemPosition: {
+    position: 'absolute',
+    right: '5%',
   },
   horizontalList: {
     top: 35,

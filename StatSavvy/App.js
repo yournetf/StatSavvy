@@ -319,7 +319,8 @@ export default function App() {
                       component={SignUpScreen} 
                       options={{ headerShown: false }}  
                     />
-                  </Stack.Navigator>              )}
+                  </Stack.Navigator>              
+                )}
               </NavigationContainer>
             </BottomSheetModalProvider>
           </GestureHandlerRootView>
