@@ -26,6 +26,14 @@ export default function Matchup({ navigation }) {
   const [snapPoints, setSnapPoints] = useState(["10%","70%"]);
   const [currentSnapPoint, setCurrentSnapPoint] = useState("5");
 
+  const [player1Image, setPlayer1Image] = useState(require('../assets/2024_NFL_HeadShots/headshot_11.png'));
+  const [player2Image, setPlayer2Image] = useState(require('../assets/2024_NFL_HeadShots/headshot_11.png'));
+  const [player1Name, setPlayer1Name] = useState("Player#1 Name");
+  const [player2Name, setPlayer2Name] = useState("Player#2 Name");
+
+  const [player1Loading, setPlayer1Loading] = useState(true);
+  const [player2Loading, setPlayer2Loading] = useState(true);
+
   useEffect(() =>{
     bottomSheetModalRef.current?.present();
   },[])
@@ -43,12 +51,12 @@ export default function Matchup({ navigation }) {
           
           <TouchableOpacity style = {[styles.headerIcon, {backgroundColor: user[1].theme[2]}]} onPress={handlePanUp}>
             <Image 
-            source  = { {uri: 'https://picsum.photos/50/50'} }
-            style   = {styles.iconImage}
+              source  = { player1Image }
+              style   = {styles.iconImage}
             />
           </TouchableOpacity>
           
-          <Text numberOfLines={1} style = {[styles.playerName, {fontSize: fontSize}]}>Player#1 Name</Text>
+          <Text numberOfLines={1} style = {[styles.playerName, {fontSize: fontSize}]}>{player1Name}</Text>
           
           <TouchableOpacity style = {styles.vsSquare}>
             <Text style={{color: 'white', fontWeight: 'bold'}}>VS</Text>
@@ -56,7 +64,7 @@ export default function Matchup({ navigation }) {
 
           <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight, {backgroundColor: user[1].theme[2]}]} onPress={handlePanUp}>
             <Image 
-            source  = { {uri: 'https://picsum.photos/50/50'} }
+            source  = { player2Image }
             style   = {styles.iconImage}
             />
           </TouchableOpacity>
@@ -64,7 +72,7 @@ export default function Matchup({ navigation }) {
           <View style={[styles.headerBottom, {backgroundColor: user[1].theme[2]}]}>
           </View>
 
-          <Text numberOfLines={1} style = {[styles.playerName, {left: '55%', fontSize: fontSize}]}>Player#2 Name</Text>
+          <Text numberOfLines={1} style = {[styles.playerName, {left: '55%', fontSize: fontSize}]}>{player2Name}</Text>
         
           <View style={styles.percentageBar}>
             <View style={[styles.percentageBarStatus, {width: `${matchupPercent1}%`}]}>
@@ -94,7 +102,16 @@ export default function Matchup({ navigation }) {
           enablePanDownToClose={false}
           onChange={Keyboard.dismiss}
         >
-          <PlayerFinder color1={user[1].theme[0]} color2={user[1].theme[1]} color3={user[1].theme[2]} color4={user[1].theme[3]}></PlayerFinder>
+          <PlayerFinder 
+            setPlayer1Function={setPlayer1Image}
+            setPlayer2Function={setPlayer2Image} 
+            setPlayer1Name={setPlayer1Name}
+            setPlayer2Name={setPlayer2Name}
+            color1={user[1].theme[0]} 
+            color2={user[1].theme[1]} 
+            color3={user[1].theme[2]} 
+            color4={user[1].theme[3]}>  
+          </PlayerFinder>
         </BottomSheetModal>
       
       

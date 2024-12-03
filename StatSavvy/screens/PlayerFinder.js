@@ -7,7 +7,7 @@ import { SQLiteDBContext } from '../App';
 import { teamData } from '../assets/TeamThemes';
 import headshots from '../assets/2024Headshots';
 
-export default function PlayerFinder({ color1, color2, color3, color4 }) {
+export default function PlayerFinder({ setPlayer1Function, setPlayer2Function, setPlayer1Name, setPlayer2Name, color1, color2, color3, color4 }) {
   
   const SQLiteDB = useContext(SQLiteDBContext);
 
@@ -26,7 +26,7 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
   ]);
 
   useEffect(()=>{
-    const loadPlayers = async ()=>{
+    const loadPlayers = async () =>{
       try{
           const allPlayers =  await SQLiteDB.getAllAsync('SELECT * FROM players');
           const playerNames = allPlayers.map(player => [player.name, player.playerID]);
@@ -44,6 +44,9 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
           const allWRs = await SQLiteDB.getAllAsync('SELECT * FROM wrs');
           const wrNames = allWRs.map(wr => [wr.name, wr.id]);
 
+          const allRBs = await SQLiteDB.getAllAsync('SELECT * FROM rbs');
+          const rbNames = allRBs.map(rb => [rb.name, rb.id]);
+
           const allTEs = await SQLiteDB.getAllAsync('SELECT * FROM tes');
           const teNames = allTEs.map(te => [te.name, te.id]);
 
@@ -51,6 +54,7 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
                         { title: 'ALL', data: playerNames },
                         { title: 'QB', data: qbNames },
                         { title: 'WR', data: wrNames},
+                        { title: 'RB', data: rbNames},
                         { title: 'TE', data: teNames }]);
         } catch (error){
           console.log("Error loading all players: ", error);
@@ -61,6 +65,11 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
 
   const [selectedSection, setSelectedSection] = useState(positions[0]); // Default to first section
   const [searchQuery, setSearchQuery] = useState('');
+
+  const setPlayer1 = (img, name) => {
+    setPlayer1Function(img);
+    setPlayer1Name(name);
+  }
 
   return (
     <SafeAreaView style={[styles.sheetView, { backgroundColor: color1 }]}>
@@ -105,7 +114,7 @@ export default function PlayerFinder({ color1, color2, color3, color4 }) {
         style={[{ top: -20 }]}
         data={selectedSection.data}
         renderItem={({ item }) =>(
-          <TouchableOpacity style={[styles.item, {backgroundColor: teamToColorMap1.get(playerIDToTeamMap.get(item[1])) || '#DBE2EF'}]}>
+          <TouchableOpacity style={[styles.item, {backgroundColor: teamToColorMap1.get(playerIDToTeamMap.get(item[1])) || '#DBE2EF'}]} onPress={()=>setPlayer1(headshots[parseInt(item[1])], item[0])}>
             <Image 
               source={headshots[parseInt(item[1])] || require(`../assets/10.png`)}
               style={[{width: 50, height: 50, borderRadius: 25}]}

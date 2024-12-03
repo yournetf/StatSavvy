@@ -166,6 +166,40 @@ export default function AdminMain(){
         }
         console.log(`--------------------------------------------------------\n`)
     }
+
+    const fillSQLiteDBwithRBS = async () => {
+        await SQLiteDB.execAsync(
+            `
+            PRAGMA journal_mode = WAL;
+            DROP TABLE IF EXISTS rbs;
+            CREATE TABLE IF NOT EXISTS rbs (
+                id INTEGER PRIMARY KEY NOT NULL, 
+                name TEXT
+          );`
+        )
+        const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
+        for(const player of allRowsPlayers) {
+          if(player.position.toLowerCase() === "rb"){
+            try {
+                await SQLiteDB.runAsync(
+                `INSERT INTO rbs (id, name) VALUES (?, ?)`,
+                [player.playerID, player.name]
+                );
+            } catch (error) {
+                console.error("Error executing insert:", error);
+            }
+          }
+        }
+    }
+
+    const printSQLiteDBRBs = async () => {
+        console.log(`--------------------------------------------------------\n \t\tRBs: `)
+        const allRowsRBs = await SQLiteDB.getAllAsync('SELECT * FROM rbs');
+        for(const rb of allRowsRBs) {
+            console.log(rb);
+        }
+        console.log(`--------------------------------------------------------\n`)
+    }
     
 
     const functions = [
@@ -180,6 +214,8 @@ export default function AdminMain(){
         { title: "Print TE Table", function: printSQLiteDBTEs },
         { title: "Fill WR Table in SQLite", function: fillSQLiteDBwithWRS },
         { title: "Print WR Table", function: printSQLiteDBWRs },
+        { title: "Fill RB Table in SQLite", function: fillSQLiteDBwithRBS },
+        { title: "Print RB Table", function: printSQLiteDBRBs },
     ]
 
     return(
