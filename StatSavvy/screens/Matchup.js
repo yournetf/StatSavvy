@@ -23,7 +23,7 @@ export default function Matchup({ navigation }) {
   const [matchupPercent2, setMatchupPercent2] = useState(25);
   
   const bottomSheetModalRef = useRef(null);
-  const [snapPoints, setSnapPoints] = useState(["10%","70%"]);
+  const [snapPoints, setSnapPoints] = useState(["10%","85%"]);
   const [currentSnapPoint, setCurrentSnapPoint] = useState("5");
 
   const [player1Image, setPlayer1Image] = useState(require('../assets/2024_NFL_HeadShots/headshot_11.png'));
