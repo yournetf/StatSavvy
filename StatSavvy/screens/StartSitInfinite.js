@@ -67,61 +67,84 @@ export default function StartSitInfinite({ onDismiss }) {
   const handleSwipeLeft = () => {
     setSelectedPlayer(1);
 
+    //Drift left and fade to 0 opacity
     setTimeout(() => {
-      rotation.value = withTiming(rotation.value - 180, {duration: 2000});
-      xPosition.value = withTiming(-700, {duration: 1000});
-      yPosition.value = withTiming(0, {duration: 2000});
-      opacity.value = withTiming(0, {duration: 1000});
+      rotation.value = withTiming(rotation.value - 180, {duration: 1000});
+      xPosition.value = withTiming(-700, {duration: 500});
+      yPosition.value = withTiming(0, {duration: 1000});
+      opacity.value = withTiming(0, {duration: 250});
     }, 500)
 
+    //Reset player selected
     setTimeout(() => {
       setSelectedPlayer(0);
     }, 1000)
 
+    //Reset position
     setTimeout(() => {
-      rotation.value = withTiming(0, { duration: 1000 });
-      xPosition.value = withTiming(0, { duration: 1000 });
-      yPosition.value = withTiming(1, {duration: 1000});
-      opacity.value = withTiming(1, {duration: 1000});
-    }, 3000);
+      rotation.value = withTiming(0, { duration: 10 });
+      xPosition.value = withTiming(0, { duration: 10 });
+      yPosition.value = withTiming(0, {duration: 10});
+    }, 1000);
+
+    setTimeout(() => {
+      yPosition.value = withTiming(-500, {duration: 200});
+      opacity.value = withTiming(0, {duration: 100});
+    }, 1100)
+
+    setTimeout(() => {
+      yPosition.value = withTiming(1, {duration: 750});
+      opacity.value = withTiming(1, {duration: 750});
+    }, 1500);
+    
   }
 
   const handleSwipeRight = () => {
     setSelectedPlayer(2);
 
+    //Drift left and fade to 0 opacity
     setTimeout(() => {
-      rotation.value = withTiming(rotation.value + 180, {duration: 2000});
-      xPosition.value = withTiming(700, {duration: 1000});
-      yPosition.value = withTiming(0, {duration: 2000});
-      opacity.value = withTiming(0, {duration: 1000});
+      rotation.value = withTiming(rotation.value + 180, {duration: 1000});
+      xPosition.value = withTiming(700, {duration: 500});
+      yPosition.value = withTiming(0, {duration: 1000});
+      opacity.value = withTiming(0, {duration: 250});
     }, 500)
 
+    //Reset player selected
     setTimeout(() => {
       setSelectedPlayer(0);
     }, 1000)
 
+    //Reset position
     setTimeout(() => {
-      rotation.value = withTiming(0, { duration: 1000 });
-      xPosition.value = withTiming(0, { duration: 1000 });
-      yPosition.value = withTiming(1, {duration: 1000});
-      opacity.value = withTiming(1, {duration: 1000});
-    }, 3000);
+      rotation.value = withTiming(0, { duration: 10 });
+      xPosition.value = 0;
+      yPosition.value = 0;
+    }, 1000);
 
+    setTimeout(() => {
+      yPosition.value = withTiming(-500, {duration: 200});
+      opacity.value = withTiming(0, {duration: 100});
+    }, 1100)
+
+    setTimeout(() => {
+      yPosition.value = withTiming(1, {duration: 750});
+      opacity.value = withTiming(1, {duration: 750});
+    }, 1500);
   }
 
   const handleSwipeUp = () => {
     setSelectedPlayer(0);
 
     setTimeout(() => {
-      yPosition.value = withTiming(-500, {duration: 1000});
-      opacity.value = withTiming(0, {duration: 500});
-    }, 250)
+      yPosition.value = withTiming(-500, {duration: 750});
+      opacity.value = withTiming(0, {duration: 300});
+    }, 500)
 
     setTimeout(() => {
       yPosition.value = withTiming(1, {duration: 1000});
-      opacity.value = withTiming(1, {duration: 1000});
-    }, 2000);
-
+      opacity.value = withTiming(1, {duration: 750});
+    }, 1500);
   }
 
 
@@ -138,9 +161,9 @@ export default function StartSitInfinite({ onDismiss }) {
             swipeThreshold={50}        
             onLayout={(event) => {
               const { width, height, x, y } = event.nativeEvent.layout;
-              if(x<0){
+              if(x<-20){
                 handleSwipeLeft();
-              } else if(x>40){
+              } else if(x>60){
                 handleSwipeRight();
               } else if(y<-20){
                 handleSwipeUp();
@@ -148,7 +171,7 @@ export default function StartSitInfinite({ onDismiss }) {
             }}
         >
             <Animated.View style={[styles.playerComparisonView, chooseLeft, {borderColor: color3}]}>
-                <TouchableOpacity 
+                <View 
                   style={[ {backgroundColor: color2, borderColor: color3}, styles.player1StatsTouchable, selectedPlayer === 1 ? styles.playerSelected && {backgroundColor: color3} : styles.playerUnselected]}
                 >
                 <View style={[styles.playerIcon, {backgroundColor: color3}]}>
@@ -169,9 +192,9 @@ export default function StartSitInfinite({ onDismiss }) {
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
-                </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity 
+                <View 
                 style={[{backgroundColor: color2, borderColor: color3}, styles.player2StatsTouchable, selectedPlayer === 2 ? styles.playerSelected && {backgroundColor: color3} : styles.playerUnselected]}
                 >
                 <View style={[styles.playerIcon, {backgroundColor: color3}]}>
@@ -192,7 +215,7 @@ export default function StartSitInfinite({ onDismiss }) {
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
-                </TouchableOpacity>
+                </View>
             </Animated.View>
         </Modal>
 
