@@ -26,13 +26,13 @@ export default function Matchup({ navigation }) {
   const [snapPoints, setSnapPoints] = useState(["10%","85%"]);
   const [currentSnapPoint, setCurrentSnapPoint] = useState("5");
 
+  const [playerChanged, setPlayerChanged] = useState(0);
+
   const [player1Image, setPlayer1Image] = useState(require('../assets/2024_NFL_HeadShots/headshot_11.png'));
-  const [player2Image, setPlayer2Image] = useState(require('../assets/2024_NFL_HeadShots/headshot_11.png'));
   const [player1Name, setPlayer1Name] = useState("Player#1 Name");
+  const [player2Image, setPlayer2Image] = useState(require('../assets/2024_NFL_HeadShots/headshot_11.png'));
   const [player2Name, setPlayer2Name] = useState("Player#2 Name");
 
-  const [player1Loading, setPlayer1Loading] = useState(true);
-  const [player2Loading, setPlayer2Loading] = useState(true);
 
   useEffect(() =>{
     bottomSheetModalRef.current?.present();
@@ -44,12 +44,22 @@ export default function Matchup({ navigation }) {
     }
   }
 
+  function handlePanUpLeft(){
+    handlePanUp();
+    setPlayerChanged(0);
+  }
+
+  function handlePanUpRight(){
+    handlePanUp();
+    setPlayerChanged(1);
+  }
+
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: user[1].theme[0]}]}>
       <BottomSheetModalProvider>
         <View style={[styles.header, {backgroundColor: user[1].theme[1]}]}>
           
-          <TouchableOpacity style = {[styles.headerIcon, {backgroundColor: user[1].theme[2]}]} onPress={handlePanUp}>
+          <TouchableOpacity style = {[styles.headerIcon, {backgroundColor: user[1].theme[2]}]} onPress={handlePanUpLeft}>
             <Image 
               source  = { player1Image }
               style   = {styles.iconImage}
@@ -62,7 +72,7 @@ export default function Matchup({ navigation }) {
             <Text style={{color: 'white', fontWeight: 'bold'}}>VS</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight, {backgroundColor: user[1].theme[2]}]} onPress={handlePanUp}>
+          <TouchableOpacity style = {[styles.headerIcon, styles.headerIconRight, {backgroundColor: user[1].theme[2]}]} onPress={handlePanUpRight}>
             <Image 
             source  = { player2Image }
             style   = {styles.iconImage}
@@ -103,6 +113,7 @@ export default function Matchup({ navigation }) {
           onChange={Keyboard.dismiss}
         >
           <PlayerFinder 
+            playerChanged={playerChanged}
             setPlayer1Function={setPlayer1Image}
             setPlayer2Function={setPlayer2Image} 
             setPlayer1Name={setPlayer1Name}

@@ -8,6 +8,7 @@ import { teamData } from '../assets/TeamThemes';
 import headshots from '../assets/2024Headshots';
 
 export default function PlayerFinder({
+  playerChanged,
   setPlayer1Function,
   setPlayer2Function,
   setPlayer1Name,
@@ -17,6 +18,7 @@ export default function PlayerFinder({
   color3,
   color4,
 }) {
+
   const SQLiteDB = useContext(SQLiteDBContext);
 
   const [playerIDToTeamMap, setPlayerIDToTeamMap] = useState(new Map());
@@ -81,6 +83,20 @@ export default function PlayerFinder({
     setPlayer1Name(name);
   };
 
+  const setPlayer2 = (img, name) => {
+    setPlayer2Function(img);
+    setPlayer2Name(name);
+  };
+
+  const handlePlayerSelect = (img, name) => {
+    if(playerChanged === 0) {
+      setPlayer1(img, name);
+    }
+    else if(playerChanged === 1) {
+      setPlayer2(img, name);
+    }
+  }
+
   // Filter data based on active tab and search query
   const filteredData = selectedSection.data.filter(item =>
     item[0].toLowerCase().includes(searchQuery.toLowerCase())
@@ -140,7 +156,7 @@ export default function PlayerFinder({
                 backgroundColor: teamToColorMap1.get(playerIDToTeamMap.get(item[1])) || '#DBE2EF',
               },
             ]}
-            onPress={() => setPlayer1(headshots[parseInt(item[1])], item[0])}
+            onPress={() => handlePlayerSelect(headshots[parseInt(item[1])], item[0])}
           >
             <Image
               source={headshots[parseInt(item[1])] || require(`../assets/10.png`)}
