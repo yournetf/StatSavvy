@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, Image, Platform, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -8,11 +8,13 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 import { useContext } from 'react';
 import { UserContext } from '../App';
+import { SQLiteDBContext } from '../App'; 
 import FootballLoading from './Loading/FootballLoading';
 
 export default function StartSitInfinite({ onDismiss }) {
 
   const user = useContext(UserContext);
+  const SQLiteDB = useContext(SQLiteDBContext);
 
   if (!user || !user[1] || !user[1].theme) {
     return <FootballLoading/>;
@@ -23,7 +25,7 @@ export default function StartSitInfinite({ onDismiss }) {
   const color3 = user[1].theme[2];
   const color4 = user[1].theme[3];
 
-  const player1 = [{
+  const [player1, setPlayer1] = useState([{
     name: "Tyreek Hill",
     data: [ 
       { key: 'Targets🎯', value: "8.3" },
@@ -33,9 +35,8 @@ export default function StartSitInfinite({ onDismiss }) {
       { key: 'YPRR📬', value: "2.18" }, 
       { key: 'Fantasy PPG🚀', value: "18.4"}
     ]
-  }];
-
-  const player2 = [{
+  }]);
+  const [player2, setPlayer2] = useState([{
     name: "Cooper Kupp",
     data: [
       { key: 'Targets🎯', value: "7.5" },
@@ -45,7 +46,48 @@ export default function StartSitInfinite({ onDismiss }) {
       { key: 'YPRR📬', value: "2.48" },
       { key: 'Fantasy PPG🚀', value: "25.4"}
     ]
-  }];
+  }]);
+
+  const [playersArray, setPlayersArray] = useState([]);
+  
+  const load2Players = async() => {
+    try{
+      const playerChosen1 = playersArray[Math.floor(Math.random() * 551)];
+      const playerChosen2 = playersArray[Math.floor(Math.random() * 551)];
+      setPlayer1([{
+        name: playerChosen1.name,
+        data: [ 
+          { key: 'Age:', value: playerChosen1.age },
+          { key: 'Number', value: playerChosen1.number }, 
+          { key: 'PlayerID', value: playerChosen1.playerID },
+          { key: 'Position', value: playerChosen1.position },
+          { key: 'Team', value: playerChosen1.team }, 
+        ]
+      }]);
+
+      setPlayer2([{
+        name: playerChosen2.name,
+        data: [ 
+          { key: 'Age:', value: playerChosen2.age },
+          { key: 'Number', value: playerChosen2.number }, 
+          { key: 'PlayerID', value: playerChosen2.playerID },
+          { key: 'Position', value: playerChosen2.position },
+          { key: 'Team', value: playerChosen2.team }, 
+        ]
+      }]);
+      
+    } catch (error){
+      console.log(error);
+    }
+  }
+
+  useEffect(async()=>{
+    setPlayersArray(await SQLiteDB.getAllAsync('SELECT * FROM players'));
+  }, [])
+
+  useEffect(()=>{
+    load2Players();
+  }, [playersArray]);
 
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
@@ -95,6 +137,7 @@ export default function StartSitInfinite({ onDismiss }) {
     setTimeout(() => {
       yPosition.value = withTiming(1, {duration: 750});
       opacity.value = withTiming(1, {duration: 750});
+      load2Players();
     }, 1500);
     
   }
@@ -130,6 +173,7 @@ export default function StartSitInfinite({ onDismiss }) {
     setTimeout(() => {
       yPosition.value = withTiming(1, {duration: 750});
       opacity.value = withTiming(1, {duration: 750});
+      load2Players();
     }, 1500);
   }
 
@@ -144,6 +188,7 @@ export default function StartSitInfinite({ onDismiss }) {
     setTimeout(() => {
       yPosition.value = withTiming(1, {duration: 1000});
       opacity.value = withTiming(1, {duration: 750});
+      load2Players();
     }, 1500);
   }
 
