@@ -6,6 +6,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import { SQLiteDBContext } from '../App';
 import { teamData } from '../assets/TeamThemes';
 import headshots from '../assets/2024Headshots';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 export default function PlayerFinder({
   playerChanged,
@@ -28,7 +29,7 @@ export default function PlayerFinder({
   const teamToColorMap2 = new Map(teamData.data.map(team => [team.teamName, team.color2]));
 
   const [positions, setPositions] = useState([
-    { title: 'FAV', data: ['Player 1', 'Player 2'] },
+    { title: '⭐', data: ['Player 1', 'Player 2'] },
     { title: 'ALL', data: [] },
     { title: 'QB', data: [] },
     { title: 'WR', data: [] },
@@ -64,7 +65,7 @@ export default function PlayerFinder({
         const teNames = allTEs.map(te => [te.name, te.id]);
 
         setPositions([
-          { title: 'FAV', data: ['Player 1', 'Player 2'] },
+          { title: '⭐', data: ['Player 1', 'Player 2'] },
           { title: 'ALL', data: playerNames },
           { title: 'QB', data: qbNames },
           { title: 'WR', data: wrNames },
