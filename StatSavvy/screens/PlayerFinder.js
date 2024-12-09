@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Platform, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Platform, Image, TouchableOpacity, Keyboard } from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { TextInput } from 'react-native-gesture-handler';
@@ -45,13 +45,9 @@ export default function PlayerFinder({
 
   useEffect(() => {
     const loadFavorites = async () => {
-      const id = 1;
-      const name = "ameer abdullah";
       try{
         await SQLiteDB.execAsync(`
           PRAGMA journal_mode = WAL;
-  
-          DROP TABLE IF EXISTS favorites;
 
           CREATE TABLE IF NOT EXISTS favorites (
             id INTEGER NOT NULL,
@@ -59,11 +55,7 @@ export default function PlayerFinder({
           );
           
         `);
-  
-        await SQLiteDB.runAsync(
-                  `INSERT INTO favorites (id, name) VALUES (?, ?)`,
-                  [id, name]
-                );
+
       } catch (error) {
         console.log(error);
       } 
@@ -95,8 +87,7 @@ export default function PlayerFinder({
         const teNames = allTEs.map(te => [te.name, te.id]);
 
         setFavorites(await SQLiteDB.getAllAsync('SELECT * FROM favorites'));
-        setfavoritesMap(new Map(favorites.map(fav => [fav.id, fav.name])));
-        setFavoritesAry(favorites.map(fav => [fav.name, fav.id]));
+        
 
         setPositions([
           { title: '⭐', data: favoritesAry },
@@ -114,9 +105,18 @@ export default function PlayerFinder({
     loadFavorites();
   }, []);
 
+  useEffect(()=>{
+    setfavoritesMap(new Map(favorites.map(fav => [fav.id, fav.name])));
+    setFavoritesAry(favorites.map(fav => [fav.name, fav.id]));
+    setPositions((prevPositions) => {
+      const updatedPositions = [...prevPositions];
+      updatedPositions[0] = { title: '⭐', data: favoritesAry }; // Update the "⭐" tab
+      return updatedPositions;
+    });
+  }, [favorites]);
+
   useEffect(() => {
     const favoritesArray = Array.from(favoritesMap).map(([id, name]) => [name, id]);
-    
     setPositions((prevPositions) => {
       const updatedPositions = [...prevPositions];
       updatedPositions[0] = { title: '⭐', data: favoritesArray }; // Update the "⭐" tab
@@ -148,13 +148,36 @@ export default function PlayerFinder({
       const newMap = new Map(prevMap);
       if (newMap.has(playerID)) {
         newMap.delete(playerID);
+        deleteFromFavsSQLite(playerID);
       } else {
         newMap.set(playerID, playerName);
+        addToFavsSQLite(playerID, playerName);
       }
       return newMap;
     });
-    console.log(favoritesAry);
   };
+
+  const deleteFromFavsSQLite = async(playerID) => {
+    await SQLiteDB.runAsync(
+      `DELETE FROM favorites WHERE id = ?`,
+      [playerID]
+    );
+    const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM favorites');
+        for(const row of allRowsPlayers) {
+          console.log(row.id, "\t" , row.name, "\t");
+        }
+  }
+
+  const addToFavsSQLite= async(playerID, playerName) => {
+    await SQLiteDB.runAsync(
+      `INSERT INTO favorites (id, name) VALUES (?, ?)`,
+      [playerID, playerName]
+    );
+    const allRowsPlayers = await SQLiteDB.getAllAsync('SELECT * FROM favorites');
+        for(const row of allRowsPlayers) {
+          console.log(row.id, "\t" , row.name, "\t");
+        }
+  }
   
 
   // Filter data based on active tab and search query
@@ -197,16 +220,26 @@ export default function PlayerFinder({
       />
 
       {/* Search Bar */}
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search players..."
-        value={searchQuery}
-        onChangeText={text => setSearchQuery(text)}
-      />
+      <View style={styles.searchBarContainer}>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search players..."
+          value={searchQuery}
+          onChangeText={text => setSearchQuery(text)}
+          autoCorrect={false}
+          inputMode='text'
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+            <Text style={styles.clearButtonText}>✕</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
 
       {/* Vertical list of players for the selected section */}
       <BottomSheetFlatList
-        style={[{ top: -120 }]}
+        style={[{ top: -160 }]}
         data={filteredData}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -263,6 +296,7 @@ export default function PlayerFinder({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.verticalList}
         ListEmptyComponent={() => <Text style={styles.emptyText}>No players available</Text>}
+        onScrollBeginDrag={()=>{Keyboard.dismiss()}}
       />
 
       <StatusBar style="auto" />
@@ -335,13 +369,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'gray'
   },
-  searchBar:{
-    top: '-25%',
-    left: '5%',
-    height: 50,
-    width: '90%',
+  searchBarContainer: {
+    top: '-30%',
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 10,
-    paddingLeft: 15,
-  }
+    paddingHorizontal: 10,
+    height: 50,
+    marginHorizontal: 20,
+    marginTop: 10,
+    elevation: 2, // For a subtle shadow
+  },
+  searchBar: {
+    flex: 1, // Take up the available space
+    fontSize: 16,
+    paddingLeft: 5,
+  },
+  clearButton: {
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  clearButtonText: {
+    fontSize: 16,
+    color: 'gray',
+  },  
 });
