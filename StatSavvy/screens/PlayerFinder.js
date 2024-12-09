@@ -29,7 +29,7 @@ export default function PlayerFinder({
   const teamToColorMap2 = new Map(teamData.data.map(team => [team.teamName, team.color2]));
 
   const [positions, setPositions] = useState([
-    { title: '⭐', data: ['Player 1', 'Player 2'] },
+    { title: '⭐', data: [] },
     { title: 'ALL', data: [] },
     { title: 'QB', data: [] },
     { title: 'WR', data: [] },
@@ -39,9 +39,39 @@ export default function PlayerFinder({
   const [selectedSection, setSelectedSection] = useState(positions[0]); // Default to first section
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [favorites, setFavorites] = useState([]);
+  const [favoritesMap, setfavoritesMap] = useState(new Map());
+  const [favoritesAry, setFavoritesAry] = useState([]);
+
   useEffect(() => {
+    const loadFavorites = async () => {
+      const id = 1;
+      const name = "ameer abdullah";
+      try{
+        await SQLiteDB.execAsync(`
+          PRAGMA journal_mode = WAL;
+  
+          DROP TABLE IF EXISTS favorites;
+
+          CREATE TABLE IF NOT EXISTS favorites (
+            id INTEGER NOT NULL,
+            name TEXT
+          );
+          
+        `);
+  
+        await SQLiteDB.runAsync(
+                  `INSERT INTO favorites (id, name) VALUES (?, ?)`,
+                  [id, name]
+                );
+      } catch (error) {
+        console.log(error);
+      } 
+    }
+
     const loadPlayers = async () => {
       try {
+
         const allPlayers = await SQLiteDB.getAllAsync('SELECT * FROM players');
         const playerNames = allPlayers.map(player => [player.name, player.playerID]);
 
@@ -64,8 +94,12 @@ export default function PlayerFinder({
         const allTEs = await SQLiteDB.getAllAsync('SELECT * FROM tes');
         const teNames = allTEs.map(te => [te.name, te.id]);
 
+        setFavorites(await SQLiteDB.getAllAsync('SELECT * FROM favorites'));
+        setfavoritesMap(new Map(favorites.map(fav => [fav.id, fav.name])));
+        setFavoritesAry(favorites.map(fav => [fav.name, fav.id]));
+
         setPositions([
-          { title: '⭐', data: ['Player 1', 'Player 2'] },
+          { title: '⭐', data: favoritesAry },
           { title: 'ALL', data: playerNames },
           { title: 'QB', data: qbNames },
           { title: 'WR', data: wrNames },
@@ -77,7 +111,18 @@ export default function PlayerFinder({
       }
     };
     loadPlayers();
+    loadFavorites();
   }, []);
+
+  useEffect(() => {
+    const favoritesArray = Array.from(favoritesMap).map(([id, name]) => [name, id]);
+    
+    setPositions((prevPositions) => {
+      const updatedPositions = [...prevPositions];
+      updatedPositions[0] = { title: '⭐', data: favoritesArray }; // Update the "⭐" tab
+      return updatedPositions;
+    });
+  }, [favoritesMap]); // Run whenever `favoritesMap` change
 
   const setPlayer1 = (img, name) => {
     setPlayer1Function(img);
@@ -97,6 +142,20 @@ export default function PlayerFinder({
       setPlayer2(img, name);
     }
   }
+
+  const handleFavorited = (playerID, playerName) => {
+    setfavoritesMap((prevMap) => {
+      const newMap = new Map(prevMap);
+      if (newMap.has(playerID)) {
+        newMap.delete(playerID);
+      } else {
+        newMap.set(playerID, playerName);
+      }
+      return newMap;
+    });
+    console.log(favoritesAry);
+  };
+  
 
   // Filter data based on active tab and search query
   const filteredData = selectedSection.data.filter(item =>
@@ -186,6 +245,18 @@ export default function PlayerFinder({
                 ? playerIDToPositionMap.get(item[1]).toUpperCase()
                 : ''}
             </Text>
+
+        
+              <TouchableOpacity style={styles.itemStar} onPress={()=>{handleFavorited(item[1], item[0])}}>
+                {favoritesMap.has(item[1]) ? 
+                (<FontAwesome5 name="star" size={24} color="gold" solid/>)
+                :
+                (<FontAwesome5 name="star" size={24} color="gold" />)  
+              }
+              </TouchableOpacity>
+              
+  
+
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
@@ -235,14 +306,19 @@ const styles = StyleSheet.create({
   },
   itemNumber: {
     position: 'absolute',
-    right:'15%',
+    right:'25%',
     borderRightColor: 'grey',
     borderRightWidth: 2,
     paddingRight: '3%'
   },
   itemPosition: {
     position: 'absolute',
+    right: '15%',
+  },
+  itemStar: {
+    position: 'absolute',
     right: '5%',
+    paddingBottom: 5,
   },
   horizontalList: {
     top: 35,
